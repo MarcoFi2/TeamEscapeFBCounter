@@ -666,6 +666,7 @@ public class FullscreenActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
+
     }
 
 }
