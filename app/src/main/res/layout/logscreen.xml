@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/logbutton_content"
+        android:text="copy to clipboard"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/logexitbutton_content"
+        android:text="exit log"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log Text"
+        android:id="@+id/logtext_content"
+        android:layout_gravity="center"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:visibility="visible"
+        android:textIsSelectable="true"
+        android:minWidth="20dp"
+        android:enabled="true"
+        android:editable="true" />
+</LinearLayout>

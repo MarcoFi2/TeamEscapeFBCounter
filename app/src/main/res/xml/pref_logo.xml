@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="LOGO BASIC SETTINGS">
+        <EditTextPreference
+            android:key="LOGOIMAGETITLE"
+            android:title="@string/pref_logo_image_name"
+            android:defaultValue="logo_init"
+            android:selectAllOnFocus="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_title"/>
+
+        <Preference
+            android:title="@string/pref_logo_image_load"
+            android:key="LOGOIMAGEURI"
+            android:summary="@string/summary_load_from_gallery">
+            <intent android:action="android.settings.BG_File_Manager" />
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="LOGO EXPERT SETTINGS">
+        <EditTextPreference
+            android:key="LOGOIMAGESIZERATIO"
+            android:title="@string/pref_logo_image_sizeratio"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_size_ratio"/>
+
+        <EditTextPreference
+            android:key="LOGOIMAGELEFTMARGIN"
+            android:title="@string/pref_logo_image_leftmargin"
+            android:defaultValue="0.5"
+            android:editable="false"
+            android:selectAllOnFocus="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+        <EditTextPreference
+            android:key="LOGOIMAGETOPMARGIN"
+            android:title="@string/pref_logo_image_topmargin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="DEFAULT SETTINGS">
+        <Preference
+            android:key="restore_logo_image"
+            android:title="Reset logo image to default" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

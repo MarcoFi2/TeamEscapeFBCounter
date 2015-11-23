@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="COUNTER BASIC SETTINGS">
+
+        <EditTextPreference
+            android:key="COUNTERTEXTSIZE"
+            android:title="@string/pref_counter_text_size"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="Set the size of the counter"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="COUNTER EXPERT SETTINGS">
+
+        <EditTextPreference
+            android:key="COUNTERTEXTLEFTMARGIN"
+            android:title="@string/pref_counter_text_left_margin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+        <EditTextPreference
+            android:key="COUNTERTEXTTOPMARGIN"
+            android:title="@string/pref_counter_text_top_margin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="DEFAULT SETTINGS">
+        <Preference
+            android:key="restore_counter"
+            android:title="Reset counter to default"
+            android:summary="Reset the counter to default settings"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference android:title="@string/pref_log_load" android:key="LOG">
+        <intent android:action="de.teamescape.dev.teamescapefbcounter.utils.LogActivity" />
+    </Preference>
+
+    <Preference
+        android:key="first_run"
+        android:title="Restore all default settings" />
+
+    <Preference
+        android:key="wipe_cache"
+        android:title="Wipe app cache" />
+
+</PreferenceScreen>

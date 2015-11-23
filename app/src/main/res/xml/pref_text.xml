@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="TEXT BASIC SETTINGS">
+        <EditTextPreference
+            android:key="TEXTCONTENTCENTER"
+            android:title="@string/pref_text_center_content"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="3"
+            android:summary=""/>
+
+        <EditTextPreference
+            android:key="TEXTCONTENTCENTERFONTSIZE"
+            android:title="@string/pref_text_center_font_size"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1" />
+
+        <EditTextPreference
+            android:key="TEXTCONTENTBUTTOM"
+            android:title="@string/pref_text_buttom_content"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="2" />
+
+        <EditTextPreference
+            android:key="TEXTCONTENTBUTTOMFONTSIZE"
+            android:title="@string/pref_text_buttom_font_size"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="TEXT EXPERT SETTINGS">
+        <EditTextPreference
+            android:key="TEXTCONTENTCENTERLEFTMARGIN"
+            android:title="@string/pref_text_center_left_margin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+        <EditTextPreference
+            android:key="TEXTCONTENTCENTERTOPMARGIN"
+            android:title="@string/pref_text_center_top_margin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+        <EditTextPreference
+            android:key="TEXTCONTENTBUTTOMLEFTMARGIN"
+            android:title="@string/pref_text_buttom_left_margin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+        <EditTextPreference
+            android:key="TEXTCONTENTBUTTOMTOPMARGIN"
+            android:title="@string/pref_text_buttom_top_margin"
+            android:defaultValue=""
+            android:selectAllOnFocus="true"
+            android:editable="true"
+            android:inputType="textCapWords"
+            android:capitalize="words"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:summary="@string/summary_margin"/>
+
+        <SwitchPreference
+            android:key="TEXTCONTENTBUTTOMHYPERLINK"
+            android:title="@string/pref_text_hyperlink_plain_switch"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="DEFAULT SETTINGS">
+        <Preference
+            android:key="restore_text_settings"
+            android:title="Reset text views to default" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
