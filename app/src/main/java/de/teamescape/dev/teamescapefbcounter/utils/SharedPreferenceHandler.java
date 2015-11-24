@@ -15,35 +15,25 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.teamescape.dev.teamescapefbcounter.FullscreenActivity;
 import de.teamescape.dev.teamescapefbcounter.R;
 import de.teamescape.dev.teamescapefbcounter.SettingsActivity;
 
@@ -105,8 +95,6 @@ public class SharedPreferenceHandler {
 
     public String   LANGUAGE;
     public String   FIRSTRUN;
-
-
 
     public SharedPreferenceHandler(Activity context) {
         super();
@@ -182,130 +170,127 @@ public class SharedPreferenceHandler {
 
                     case "BACKGROUNDIMAGETITLE":
                         Log.d(TAG, "Background updated to image: " + mPrefs.getString(key, null));
-                        //Toast.makeText(settingsactivity, "Background image changed to "+mPrefs.getString(key, null), Toast.LENGTH_SHORT).show();
                         break;
                     case "BACKGROUNDIMAGEINTERNALURL":
-                        //TODO
+                        Log.d(TAG, "Background image internal url was changed to: "+mPrefs.getString(key,null));
                         break;
                     case "BACKGROUNDIMAGEURI":
                         if(mPrefs.getString(key, null)!=null){
                             //start progressdialog => end in onpostexecute
                             fragmentcontext = SettingsActivity.backgroundfragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
-                            Log.d(TAG, "Background image uri changes were made---new internal URL and Title are set");
+                            Log.d(TAG, "Background image uri was changed: "+mPrefs.getString(key,null));
                         }
                         break;
                     case "LOGOIMAGETITLE":
                         Log.d(TAG, "Logo updated to image: " + mPrefs.getString(key, null));
-                        //Toast.makeText(settingsactivity, "Logo image changed to "+mPrefs.getString(key, null), Toast.LENGTH_SHORT).show();
                         break;
                     case "LOGOIMAGEURI":
                         if(mPrefs.getString(key, null)!=null) {
                             fragmentcontext = SettingsActivity.logofragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
-                            Log.d(TAG, "Logo image uri changes were made---new internal URL and Title are set");
+                            Log.d(TAG, "Logo image uri was changed: "+mPrefs.getString(key,null));
                         }
                         break;
                     case "LOGOIMAGESIZERATIO":
-                        //TODO
+                        Log.d(TAG, "Logo image size ratio was changed: "+mPrefs.getString(key,null));
                         break;
                     case "LOGOIMAGELEFTMARGIN":
-                        //TODO
+                        Log.d(TAG, "Logo image left margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKIMAGETITLE":
-                        //TODO
+                        Log.d(TAG, "Facebook image title was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKIMAGEURI":
                         if(mPrefs.getString(key, null)!=null) {
                             fragmentcontext = SettingsActivity.facebookfragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
                         }
-                        //TODO
+                        Log.d(TAG, "Facebook image uri was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKIMAGEINTERNALURL":
-                        //TODO
+                        Log.d(TAG, "Facebook image internal url was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKIMAGESIZERATIO":
-                        //TODO
+                        Log.d(TAG, "Facebook image size ratio was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKIMAGELEFTMARGIN":
-                        //TODO
+                        Log.d(TAG, "Facebook image left margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKIMAGETOPMARGIN":
-                        //TODO
+                        Log.d(TAG, "Facebook image top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKFQLCALLURL":
-                        //TODO
+                        Log.d(TAG, "Facebook fql call was changed: "+mPrefs.getString(key,null));
                         break;
                     case "COUNTERTEXTSIZE":
-                        //TODO
+                        Log.d(TAG, "Counter text size was changed: "+mPrefs.getString(key,null));
                         break;
                     case "COUNTERTEXTLEFTMARGIN":
-                        //TODO
+                        Log.d(TAG, "Counter text left margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "COUNTERTEXTTOPMARGIN":
-                        //TODO
+                        Log.d(TAG, "Counter text top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "LASTKNOWNFACEBOOKCOUNT":
                         Log.d(TAG, "FB counter updated to: " + mPrefs.getString(key,null));
                         break;
                     case "COUNTERUPDATEINTEVAL":
-                        //TODO
                         break;
                     case "FIXEDALLOCATIONCOUNTERFB":
-                        //TODO
+                        Log.d(TAG, "Value of fixed allocation counter fb was changed: "+mPrefs.getString(key,null));
                         break;
                     case "QRCODEIMAGETITLE":
-                        //TODO
+                        Log.d(TAG, "QR code title was changed: "+mPrefs.getString(key,null));
                         break;
                     case "QRCODEIMAGEINTERNALURL":
-                        //TODO
+                        Log.d(TAG, "QR code image internal url was changed: "+mPrefs.getString(key,null));
                         break;
                     case "QRCODEIMAGEURI":
                         if(mPrefs.getString(key, null)!=null) {
                             fragmentcontext = SettingsActivity.qrcodefragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
                         }
-                        //TODO
+                        Log.d(TAG, "QR code image uri was changed: "+mPrefs.getString(key,null));
                         break;
                     case "QRCODEIMAGESIZERATIO":
-                        //TODO
+                        Log.d(TAG, "QR code image size ratio was changed: "+mPrefs.getString(key,null));
                         break;
                     case "QRCODEIMAGELEFTMARGIN":
-                        //TODO
+                        Log.d(TAG, "QR code image left margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "QRCODEIMAGETOPMARGIN":
-                        //TODO
+                        Log.d(TAG, "QR code image top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTCENTER":
-                        //TODO
+                        Log.d(TAG, "text content center was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTCENTERLEFTMARGIN":
-                        //TODO
+                        Log.d(TAG, "text content center left margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTCENTERTOPMARGIN":
-                        //TODO
+                        Log.d(TAG, "text content center top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTCENTERFONTSIZE":
-                        //TODO
+                        Log.d(TAG, "text content center font size was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTBUTTOM":
-                        //TODO
+                        Log.d(TAG, "text content buttom was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTBUTTOMLEFTMARGIN":
-                        //TODO
+                        Log.d(TAG, "text content buttom left margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTBUTTOMTOPMARGIN":
-                        //TODO
+                        Log.d(TAG, "text content buttom top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTBUTTOMFONTSIZE":
-                        //TODO
+                        Log.d(TAG, "text content buttom font size was changed: "+mPrefs.getString(key,null));
                         break;
                     case "TEXTCONTENTBUTTOMHYPERLINK":
-                        //TODO
+                        Log.d(TAG, "text content buttom hyperlink value was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FIRSTRUN":
-                        //TODO
+                        Log.d(TAG, "first run value was changed: "+mPrefs.getString(key,null));
                         break;
                     default:
                 }
@@ -386,7 +371,6 @@ public class SharedPreferenceHandler {
             if(MimeType == "image/jpg" || MimeType == "image/jpeg"){
                 try {
                     FileOutputStream fos = null;
-                    //TODO add loading progressbar
                     fos = new FileOutputStream(mypathFile);
                     // Use the compress method on the BitMap object to write image to the OutputStream
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
@@ -404,7 +388,6 @@ public class SharedPreferenceHandler {
                 if(MimeType=="image/png"){
                     try {
                         FileOutputStream fos = null;
-                        //TODO add loading progressbar
                         fos = new FileOutputStream(mypathFile);
                         // Use the compress method on the BitMap object to write image to the OutputStream
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
@@ -421,7 +404,6 @@ public class SharedPreferenceHandler {
                 }else{
                     try {
                         FileOutputStream fos = null;
-                        //TODO add loading progressbar
                         fos = new FileOutputStream(mypathFile);
                         // Use the compress method on the BitMap object to write image to the OutputStream
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
@@ -465,15 +447,10 @@ public class SharedPreferenceHandler {
         }
         input.close();
         input = hostactivity.getContentResolver().openInputStream(uri);
-        //onlyBoundsOptions.inDither=true;//optional
-        //onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
-        //load image
         onlyBoundsOptions.inJustDecodeBounds = false;
         onlyBoundsOptions.inPreferredConfig = Bitmap.Config.RGB_565;
         Bitmap bitmap = BitmapFactory.decodeStream(input,null,onlyBoundsOptions);
-
         input.close();
-
         return bitmap;
     }
 
@@ -497,25 +474,6 @@ public class SharedPreferenceHandler {
         }
 
         return inSampleSize;
-    }
-
-    private static int getPowerOfTwoForSampleRatio(double ratio){
-        int k = Integer.highestOneBit((int)Math.floor(ratio));
-        if(k==0) return 1;
-        else return k;
-    }
-
-    private Bitmap getBitmapFromInternalURL(String url, String title) {
-        try {
-            File f=new File(url, title);
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            return b;
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void firstrun(Activity context) {
@@ -637,36 +595,13 @@ public class SharedPreferenceHandler {
         return text;
     }
 
-    public void clearSharedPreference(Context context) {
-        SharedPreferences settings;
-        Editor editor;
-
-        //settings = PreferenceManager.getDefaultSharedPreferences(context);
-        settings = context.getSharedPreferences(TEFBC_NAME, Context.MODE_PRIVATE);
-        editor = settings.edit();
-
-        editor.clear();
-        editor.commit();
-    }
-
-    public void removeValue(Context context, String TEFBC_KEY) {
-        SharedPreferences settings;
-        Editor editor;
-
-        settings = context.getSharedPreferences(TEFBC_NAME, Context.MODE_PRIVATE);
-        editor = settings.edit();
-
-        editor.remove(TEFBC_KEY);
-        editor.commit();
-    }
-
     /////////////////////////sharedproperties update Section///////////////////////////
 
 
     private void reactToImageUriChanges(SharedPreferences mPrefs, final String key) {
-        final String mkey = key;
-        String mPath = getPath(hostactivity, Uri.parse(mPrefs.getString(mkey, null)));
-        final String[] filename = {mPath.substring(mPath.lastIndexOf("/") + 1)};
+        String mPath = getPath(hostactivity, Uri.parse(mPrefs.getString(key, null)));
+        //TODO Filename from Google drive
+        final String[] filename = {mPath.substring((mPath != null ? mPath.lastIndexOf("/") : 0) + 1)};
         Log.d(TAG, "Image Path: " + mPath);
         Log.d(TAG, "Filename: " + filename[0]);
 
@@ -696,7 +631,7 @@ public class SharedPreferenceHandler {
             @Override
             protected void onPostExecute(Bitmap bitmap){
                 try{
-                    String storageDirectory = saveToInternalStorage(bitmap, filename[0], mkey);
+                    String storageDirectory = saveToInternalStorage(bitmap, filename[0], key);
                     Log.d(TAG, filename[0] + " was stored to: " + storageDirectory);
                     progressDialog.dismiss();
                 }catch(Exception e){
@@ -709,7 +644,6 @@ public class SharedPreferenceHandler {
         imageLoadAsyncTask.execute(Uri.parse(this.mPrefs.getString(key, null)));
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -719,7 +653,6 @@ public class SharedPreferenceHandler {
      *
      * @param context The context.
      * @param uri The Uri to query.
-     * @author paulburke
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
@@ -777,8 +710,10 @@ public class SharedPreferenceHandler {
                 if (isGooglePhotosUri(uri))
                     return uri.getLastPathSegment();
 
-                if(isGoogleDriveUri(uri))
+                if(isGoogleDriveUri(uri)){
+                    //TODO somehow the right name should be returned
                     return uri.getLastPathSegment();
+                }
 
                 return getDataColumn(context, uri, null, null);
             }
@@ -797,7 +732,10 @@ public class SharedPreferenceHandler {
                 return uri.getLastPathSegment();
 
             if(isGoogleDriveUri(uri))
+            {
+                //TODO somehow the right name should be returned
                 return uri.getLastPathSegment();
+            }
 
             return getDataColumn(context, uri, null, null);
         }
@@ -822,20 +760,11 @@ public class SharedPreferenceHandler {
     public static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {
 
-
         Cursor cursor = null;
         final String column = "_data";
         final String[] projection = {
                 column
         };
-        //TODO hostactivity is not the right activity context -> has to be Settings Activity
-        /*if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.System.canWrite(context)) {
-                hostactivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE}, 2909);
-            }
-        }*/
-        //TODO wait for response
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
                     null);
@@ -847,11 +776,8 @@ public class SharedPreferenceHandler {
             if (cursor != null)
                 cursor.close();
         }
-
-
         return null;
     }
-
 
     /**
      * @param uri The Uri to check.

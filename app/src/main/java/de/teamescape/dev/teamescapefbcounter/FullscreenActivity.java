@@ -1,24 +1,16 @@
 package de.teamescape.dev.teamescapefbcounter;
 
-
 import android.annotation.SuppressLint; //required
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +22,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,15 +29,10 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import de.teamescape.dev.teamescapefbcounter.utils.AsyncCounterHandler;
-import de.teamescape.dev.teamescapefbcounter.utils.AsyncFacebookHandler;
 import de.teamescape.dev.teamescapefbcounter.utils.SharedPreferenceHandler;
 
 /**
@@ -84,7 +70,6 @@ public class FullscreenActivity extends AppCompatActivity {
     private ImageView mContentView;
     private View mControlsView;
     private boolean mVisible;
-    public static boolean initcountersizeisnotset = true;
     public boolean flag = true;
 
     @Override
@@ -98,10 +83,7 @@ public class FullscreenActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
 
         sharedPreferenceHandler = new SharedPreferenceHandler(context);
-
-        //initSystem(sharedPreferenceHandler);
         invokeAsyncCounterHandler((TextView) findViewById(R.id.counter_content), 1000);
-        //invokeAsyncFacebookHandler(updateinterval.intValue(), txtview);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -129,28 +111,6 @@ public class FullscreenActivity extends AppCompatActivity {
         findViewById(R.id.exit_button).setOnTouchListener(mDelayHideTouchListenerExit);
     }
 
-    private void invokeAsyncFacebookHandler(int intervall, final TextView mCounterView) {
-        final Handler handler = new Handler();
-        Timer timer = new Timer();
-        TimerTask doAsynchronousTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        try {
-                            AsyncFacebookHandler asyncfb = new AsyncFacebookHandler(context,mCounterView);
-                            asyncfb.execute();
-                        } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                        }
-                    }
-                });
-            }
-        };
-        timer.schedule(doAsynchronousTask, 0, intervall);
-
-    }
-
     private void invokeAsyncCounterHandler(final TextView mCounterView, int intervall){
 
         final Handler handler = new Handler();
@@ -174,7 +134,7 @@ public class FullscreenActivity extends AppCompatActivity {
                             asynccounter.execute();
                             flag = !flag;
                         } catch (Exception e) {
-                            // TODO Auto-generated catch block
+                            e.printStackTrace();
                         }
                     }
                 });
@@ -187,10 +147,6 @@ public class FullscreenActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        //TODO TESTING
         delayedHide(0);
     }
 
@@ -307,61 +263,53 @@ public class FullscreenActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-
-
     //////////////////////////////////////////////
-    //////////           INIT SECTION      //////////////
+    //////////        INIT SECTION        ////////
     //////////////////////////////////////////////
 
-    /**
-     * This method coordinates all initial System settings.
-     *
-     *
-     * @param sharedPreferenceHandler
-     */
     private void initSystem(SharedPreferenceHandler sharedPreferenceHandler){
         //init background
-        initElemet(sharedPreferenceHandler.BACKGROUNDIMAGETITLE, sharedPreferenceHandler.BACKGROUNDIMAGEINTERNALURL,
+        initElement(sharedPreferenceHandler.BACKGROUNDIMAGETITLE, sharedPreferenceHandler.BACKGROUNDIMAGEINTERNALURL,
                 null, null,
                 "IMAGE", "BACKGROUND",
                 null, null,
-                null, null);
+                null);
         //init logo
-        initElemet(sharedPreferenceHandler.LOGOIMAGETITLE, sharedPreferenceHandler.LOGOIMAGEINTERNALURL,
+        initElement(sharedPreferenceHandler.LOGOIMAGETITLE, sharedPreferenceHandler.LOGOIMAGEINTERNALURL,
                 null, null,
                 "IMAGE", "LOGO",
                 sharedPreferenceHandler.LOGOIMAGESIZERATIO, sharedPreferenceHandler.LOGOIMAGELEFTMARGIN,
-                sharedPreferenceHandler.LOGOIMAGETOPMARGIN, null);
+                sharedPreferenceHandler.LOGOIMAGETOPMARGIN);
         //init counter
-        initElemet(null,null,
+        initElement(null,null,
                 sharedPreferenceHandler.LASTKNOWNFACEBOOKCOUNT, sharedPreferenceHandler.COUNTERTEXTSIZE,
                 "COUNTER","COUNTER",
                 null, sharedPreferenceHandler.COUNTERTEXTLEFTMARGIN,
-                sharedPreferenceHandler.COUNTERTEXTTOPMARGIN, sharedPreferenceHandler.COUNTERUPDATEINTEVAL);
+                sharedPreferenceHandler.COUNTERTEXTTOPMARGIN);
         //init facebook
-        initElemet(sharedPreferenceHandler.FACEBOOKIMAGETITLE, sharedPreferenceHandler.FACEBOOKIMAGEINTERNALURL,
+        initElement(sharedPreferenceHandler.FACEBOOKIMAGETITLE, sharedPreferenceHandler.FACEBOOKIMAGEINTERNALURL,
                 null, null,
                 "IMAGE", "FACEBOOK",
                 sharedPreferenceHandler.FACEBOOKIMAGESIZERATIO, sharedPreferenceHandler.FACEBOOKIMAGELEFTMARGIN,
-                sharedPreferenceHandler.FACEBOOKIMAGETOPMARGIN, null);
+                sharedPreferenceHandler.FACEBOOKIMAGETOPMARGIN);
         //init qr code
-        initElemet(sharedPreferenceHandler.QRCODEIMAGETITLE, sharedPreferenceHandler.QRCODEIMAGEINTERNALURL,
+        initElement(sharedPreferenceHandler.QRCODEIMAGETITLE, sharedPreferenceHandler.QRCODEIMAGEINTERNALURL,
                 null, null,
                 "IMAGE", "QR",
                 sharedPreferenceHandler.QRCODEIMAGESIZERATIO, sharedPreferenceHandler.QRCODEIMAGELEFTMARGIN,
-                sharedPreferenceHandler.QRCODEIMAGETOPMARGIN, null);
+                sharedPreferenceHandler.QRCODEIMAGETOPMARGIN);
         //init text center
-        initElemet(null,null,
+        initElement(null,null,
                 sharedPreferenceHandler.TEXTCONTENTCENTER, sharedPreferenceHandler.TEXTCONTENTCENTERFONTSIZE,
                 "TEXT","CENTERTEXT",
                 null, sharedPreferenceHandler.TEXTCONTENTCENTERLEFTMARGIN,
-                sharedPreferenceHandler.TEXTCONTENTCENTERTOPMARGIN,null);
+                sharedPreferenceHandler.TEXTCONTENTCENTERTOPMARGIN);
         //init text buttom
-        initElemet(null,null,
+        initElement(null,null,
                 sharedPreferenceHandler.TEXTCONTENTBUTTOM, sharedPreferenceHandler.TEXTCONTENTBUTTOMFONTSIZE,
                 "TEXT","BUTTOMTEXT",
                 null, sharedPreferenceHandler.TEXTCONTENTBUTTOMLEFTMARGIN,
-                sharedPreferenceHandler.TEXTCONTENTBUTTOMTOPMARGIN,null);
+                sharedPreferenceHandler.TEXTCONTENTBUTTOMTOPMARGIN);
 
     }
 
@@ -377,8 +325,7 @@ public class FullscreenActivity extends AppCompatActivity {
         super.onStart();
     }
 
-
-    public void initElemet(String imgresourcetitle, String imageinternalurl, String content, String fontsize, String elementtag, String tagid, Double sizeratio, Double leftmargin, Double topmargin, Double updateinterval) {
+    public void initElement(String imgresourcetitle, String imageinternalurl, String content, String fontsize, String elementtag, String tagid, Double sizeratio, Double leftmargin, Double topmargin) {
         Log.d(TAG, tagid + " element updated:");
 
         try {
@@ -440,7 +387,6 @@ public class FullscreenActivity extends AppCompatActivity {
                     txtview = (TextView) findViewById(R.id.counter_content);
                     calculatedleftmargin = (int) ((screensize.x)  * leftmargin);
                     calculatedtopmargin = (int) ((screensize.y)  * topmargin);
-                    //set background image counter_background_init scale image to size of textview
                     break;
                 case "CENTERTEXT":
                     txtview = (TextView) findViewById(R.id.maintext_content);
@@ -469,9 +415,13 @@ public class FullscreenActivity extends AppCompatActivity {
                         Bitmap bScaled = getResizedBitmap(bMap, imagesize.x);
                         if(tagid!="BACKGROUND"){
                             lp.setMargins(calculatedleftmargin, calculatedtopmargin , 0, 0);
-                            imgview.setLayoutParams(lp);
+                            if (imgview != null) {
+                                imgview.setLayoutParams(lp);
+                            }
                         }
-                        imgview.setImageBitmap(bScaled);
+                        if (imgview != null) {
+                            imgview.setImageBitmap(bScaled);
+                        }
                         Log.d(TAG, "image " + imgresourcetitle + " loaded from assets");
 
                     }catch(Exception e) {
@@ -499,30 +449,37 @@ public class FullscreenActivity extends AppCompatActivity {
                     break;
 
                 case "TEXT":
-                    txtview.setGravity(Gravity.CENTER);
+                    if (txtview != null) {
+                        txtview.setGravity(Gravity.CENTER);
+                    }
                     int TeamEscapeColor = Color.parseColor("#E6C846");
                     if(tagid=="BUTTOMTEXT" && sharedPreferenceHandler.TEXTCONTENTBUTTOMHYPERLINK){
-                        txtview.setClickable(true);
-                        String hyperlink_text = "<a href='http://"+content+"'> "+content + " </a>";
-                        txtview.setText(Html.fromHtml(hyperlink_text));
-                        txtview.setMovementMethod(LinkMovementMethod.getInstance());
-                        txtview.setLinkTextColor(TeamEscapeColor);
+                        if (txtview != null) {
+                            txtview.setClickable(true);
+                            String hyperlink_text = "<a href='http://"+content+"'> "+content + " </a>";
+                            txtview.setText(Html.fromHtml(hyperlink_text));
+                            txtview.setMovementMethod(LinkMovementMethod.getInstance());
+                            txtview.setLinkTextColor(TeamEscapeColor);
+                        }
                     }else{
-                        txtview.setText(content);
+                        if (txtview != null) {
+                            txtview.setText(content);
+                        }
                     }
-                    txtview.setTextSize(Float.parseFloat(fontsize));
-                    Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.otf");
-                    txtview.setTypeface(tf, Typeface.BOLD);
-                    int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(screensize.x, View.MeasureSpec.AT_MOST);
-                    int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    txtview.measure(widthMeasureSpec, heightMeasureSpec);
-                    calculatedleftmargin = (int) ((screensize.x - txtview.getMeasuredWidth() )  * leftmargin);
-                    calculatedtopmargin = (int) ((screensize.y - txtview.getMeasuredHeight())  * topmargin);
-                    lp.setMargins(calculatedleftmargin, calculatedtopmargin, 0, 0);
-                    txtview.setLayoutParams(lp);
-                    txtview.setTextColor(TeamEscapeColor);
+                    if (txtview != null) {
+                        txtview.setTextSize(Float.parseFloat(fontsize));
+                        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.otf");
+                        txtview.setTypeface(tf, Typeface.BOLD);
+                        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(screensize.x, View.MeasureSpec.AT_MOST);
+                        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+                        txtview.measure(widthMeasureSpec, heightMeasureSpec);
+                        calculatedleftmargin = (int) ((screensize.x - txtview.getMeasuredWidth() )  * leftmargin);
+                        calculatedtopmargin = (int) ((screensize.y - txtview.getMeasuredHeight())  * topmargin);
+                        lp.setMargins(calculatedleftmargin, calculatedtopmargin, 0, 0);
+                        txtview.setLayoutParams(lp);
+                        txtview.setTextColor(TeamEscapeColor);
+                    }
                     break;
-
                 case "COUNTER":
                     if (txtview != null) {
                         txtview.setGravity(Gravity.CENTER);
@@ -549,54 +506,6 @@ public class FullscreenActivity extends AppCompatActivity {
             Log.e(TAG, "exception", e);
         }
 
-    }
-
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-
-        return inSampleSize;
-    }
-
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,int reqWidth, int reqHeight) {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        //options.inPremultiplied = true;
-        BitmapFactory.decodeResource(res, resId, options);
-
-        // Calculate inSampleSize
-        //options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        //The new size we want to scale to
-        final int REQUIRED_WIDTH=reqWidth;
-        final int REQUIRED_HIGHT=reqHeight;
-        //Find the correct scale value. It should be the power of 2.
-        int scale=1;
-        while(options.outWidth/scale/2>=REQUIRED_WIDTH && options.outHeight/scale/2>=REQUIRED_HIGHT)
-            scale*=2;
-        BitmapFactory.Options options2 = new BitmapFactory.Options();
-        options2.inSampleSize=scale;
-        // Decode bitmap with inSampleSize set
-        options2.inJustDecodeBounds = false;
-        //options.inPreferredConfig = Bitmap.Config.RGB_565;
-        //options.inDither = true;
-        //return BitmapFactory.decodeResource(res, resId, options2);
-        return BitmapFactory.decodeResource(res,resId,options2);
     }
 
     private Bitmap getResizedBitmap(Bitmap bm, int newWidth) {

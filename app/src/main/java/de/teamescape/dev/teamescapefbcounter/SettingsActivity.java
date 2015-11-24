@@ -63,8 +63,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static Context facebookfragmentcontext;
     public static Context qrcodefragmentcontext;
 
-    //public static EditTextPreference bg_img_title;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,85 +138,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-//    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-//        @Override
-//        public boolean onPreferenceChange(Preference preference, Object value) {
-//            String stringValue = value.toString();
-//
-//            if (preference instanceof ListPreference) {
-//                // For list preferences, look up the correct display value in
-//                // the preference's 'entries' list.
-//                ListPreference listPreference = (ListPreference) preference;
-//                int index = listPreference.findIndexOfValue(stringValue);
-//
-//                // Set the summary to reflect the new value.
-//                preference.setSummary(
-//                        index >= 0
-//                                ? listPreference.getEntries()[index]
-//                                : null);
-//
-//            } else if (preference instanceof RingtonePreference) {
-//                // For ringtone preferences, look up the correct display value
-//                // using RingtoneManager.
-//                if (TextUtils.isEmpty(stringValue)) {
-//                    // Empty values correspond to 'silent' (no ringtone).
-//                    preference.setSummary(R.string.pref_ringtone_silent);
-//
-//                } else {
-//                    Ringtone ringtone = RingtoneManager.getRingtone(
-//                            preference.getContext(), Uri.parse(stringValue));
-//
-//                    if (ringtone == null) {
-//                        // Clear the summary if there was a lookup error.
-//                        preference.setSummary(null);
-//                    } else {
-//                        // Set the summary to reflect the new ringtone display
-//                        // name.
-//                        String name = ringtone.getTitle(preference.getContext());
-//                        preference.setSummary(name);
-//                    }
-//                }
-//
-//            } else {
-//                // For all other preferences, set the summary to the value's
-//                // simple string representation.
-//                preference.setSummary(stringValue);
-//            }
-//            return true;
-//        }
-//    };
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-//    private static void bindPreferenceSummaryToValue(Preference preference) {
-//        // Set the listener to watch for value changes.
-//        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-//
-//        // Trigger the listener immediately with the preference's
-//        // current value.
-//        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-//                PreferenceManager
-//                        .getDefaultSharedPreferences(preference.getContext())
-//                        .getString(preference.getKey(), ""));
-//    }
-
-    /**
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || BackgroundImagePreferenceFragment.class.getName().equals(fragmentName)
                 || LogoImagePreferenceFragment.class.getName().equals(fragmentName)
                 || FacebookPreferenceFragment.class.getName().equals(fragmentName)
@@ -275,31 +199,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         editor.commit();
     }
 
-    public static boolean checktitleinput(String newValue, String URLTag){
-        boolean found;
-        //check drawable
-        int resID = 0;
-        resID = activity.getResources().getIdentifier(newValue.toString(), "drawable", activity.getPackageName());
-        if (resID!=0){
-            found=true;
-            Toast.makeText(activity, "Valid input - image found in assets", Toast.LENGTH_LONG).show();
-        }else{
-            found = false;
-            ContextWrapper cw = new ContextWrapper(activity);
-                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-                File mypath=new File(directory, String.valueOf(newValue));
-                if(mypath.exists()){
-                    found = true;
-                    save(URLTag,directory.getAbsolutePath());
-                Toast.makeText(activity, "Valid input - image found in internal storage", Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(activity, "Invalid input - image not found", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        return found;
-    }
-
     public static boolean checkmarginsizeinput(Object newValue, Double minPort, Double maxPort){
         try{
             Double val = Double.valueOf(newValue.toString());
@@ -313,16 +212,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Toast.makeText(activity, "invalid input", Toast.LENGTH_LONG).show();
             return false;
         }
-    }
-
-    public String getValue(Context context, String TEFBC_KEY) {
-        SharedPreferences settings;
-        String text;
-
-        //settings = PreferenceManager.getDefaultSharedPreferences(context);
-        settings = context.getSharedPreferences(TEFBC_NAME, Context.MODE_PRIVATE);
-        text = settings.getString(TEFBC_KEY, null);
-        return text;
     }
 
     public static void setListPreferenceImageList(ListPreference lp, String PrefTag) {
@@ -387,64 +276,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
         return index;
     }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
-
-        }
-
-    }
-
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
-        }
-    }
-
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-            setHasOptionsMenu(true);
-
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-
-    }
-
 
     @SuppressLint("ValidFragment")
     public static class BackgroundImagePreferenceFragment extends PreferenceFragment {
