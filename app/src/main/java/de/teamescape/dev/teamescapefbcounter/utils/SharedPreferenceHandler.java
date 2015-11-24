@@ -6,6 +6,7 @@ package de.teamescape.dev.teamescapefbcounter.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -41,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import de.teamescape.dev.teamescapefbcounter.FullscreenActivity;
 import de.teamescape.dev.teamescapefbcounter.R;
@@ -54,6 +56,7 @@ public class SharedPreferenceHandler {
     private static final String TAG = SharedPreferenceHandler.class.getSimpleName();
     public static Activity hostactivity;
     Activity settingsactivity;
+    ProgressDialog progressDialog;
 
     private ImageView mContentView;
 
@@ -659,9 +662,9 @@ public class SharedPreferenceHandler {
     private void reactToImageUriChanges(SharedPreferences mPrefs, final String key) {
         final String mkey = key;
         String mPath = getPath(hostactivity, Uri.parse(mPrefs.getString(mkey, null)));
-        final String filename = mPath.substring(mPath.lastIndexOf("/") + 1);
+        final String[] filename = {mPath.substring(mPath.lastIndexOf("/") + 1)};
         Log.d(TAG, "Image Path: " + mPath);
-        Log.d(TAG, "Filename: " + filename);
+        Log.d(TAG, "Filename: " + filename[0]);
 
         AsyncTask<Uri, Void, Bitmap> imageLoadAsyncTask = new AsyncTask<Uri, Void, Bitmap>(){
 
@@ -678,13 +681,14 @@ public class SharedPreferenceHandler {
             @Override
             protected void onPostExecute(Bitmap bitmap){
                 try{
-                    String storageDirectory = saveToInternalStorage(bitmap, filename, mkey);
-                    Log.d(TAG, filename + " was stored to: " + storageDirectory);
+                    String storageDirectory = saveToInternalStorage(bitmap, filename[0], mkey);
+                    Log.d(TAG, filename[0] + " was stored to: " + storageDirectory);
                 }catch(Exception e){
-                    Log.d(TAG,"onPostExecute: "+e.toString());
+                    Log.d(TAG, "onPostExecute: "+e.toString());
                 }
             }
         };
+
         imageLoadAsyncTask.execute(Uri.parse(this.mPrefs.getString(key, null)));
     }
 

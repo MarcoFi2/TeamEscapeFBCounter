@@ -51,7 +51,6 @@ import de.teamescape.dev.teamescapefbcounter.utils.SharedPreferenceHandler;
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
-    private static SharedPreferenceHandler sharedPreference;
     private static SharedPreferences settings;
     public static Activity activity;
     public static final String TEFBC_NAME = "TEFBC_PREFS";
