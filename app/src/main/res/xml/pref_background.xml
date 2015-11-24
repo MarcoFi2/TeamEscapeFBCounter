@@ -3,7 +3,7 @@
     android:fragment="de.teamescape.dev.teamescapefbcounter.SettingsActivity$BackgroundImagePreferenceFragment">
 
     <PreferenceCategory android:title="BACKGROUND BASIC SETTINGS">
-        <EditTextPreference
+        <!--<EditTextPreference
             android:key="BACKGROUNDIMAGETITLE"
             android:title="@string/pref_title_background_image_name"
             android:defaultValue="@string/background_default_value"
@@ -13,7 +13,7 @@
             android:singleLine="true"
             android:maxLines="1"
             android:summary="@string/summary_title"/>
-
+        -->
         <ListPreference
             android:key="BACKGROUNDIMAGETITLELIST"
             android:title="List of stored images"

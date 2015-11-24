@@ -20,7 +20,7 @@
 
     <!-- Logo settings -->
     <string name="pref_header_logo">Logo image</string>
-    <string name="pref_logo_image_load">Set logo image</string>
+    <string name="pref_logo_image_load">Load logo image</string>
     <string name="pref_logo_image_name">Logo image title</string>
     <string name="pref_logo_image_sizeratio">Logo image size</string>
     <string name="pref_logo_image_leftmargin">Left margin</string>
@@ -28,7 +28,7 @@
 
     <!-- Facebook settings -->
     <string name="pref_header_facebook">Facebook settings </string>
-    <string name="pref_facebook_image_load">Set Facebook image</string>
+    <string name="pref_facebook_image_load">Load Facebook image</string>
     <string name="pref_facebook_image_title">Facebook image title</string>
     <string name="pref_facebook_image_sizeratio">Facebook image size</string>
     <string name="pref_facebook_image_left_margin">Left margin</string>
@@ -57,14 +57,14 @@
 
     <!-- QR settings -->
     <string name="pref_header_qr">QR-Code settings</string>
-    <string name="pref_qrcode_image_load">Set QR-Code image</string>
+    <string name="pref_qrcode_image_load">Load QR-Code image</string>
     <string name="pref_qrcode_image_title">QR-Code image title</string>
     <string name="pref_qrcode_image_sizeratio">QR-Code image size</string>
     <string name="pref_qrcode_image_left_margin">Left margin</string>
     <string name="pref_qrcode_image_top_margin">Top margin</string>
 
     <!-- Log settings -->
-    <string name="pref_header_log">Debug Log (Hidden in v.1.0)</string>
+    <string name="pref_header_log">Superuser settings (Hidden in v.1.0)</string>
     <string name="title_activity_log">System Log</string>
     <string name="pref_log_load">Log Activity</string>
     <string name="title_activity_settings_activity_test">Settings</string>

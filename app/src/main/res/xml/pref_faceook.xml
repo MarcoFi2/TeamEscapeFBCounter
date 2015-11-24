@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="FACEBOOK BASIC SETTINGS">
-        <EditTextPreference
+       <!-- <EditTextPreference
             android:key="FACEBOOKIMAGETITLE"
             android:title="@string/pref_facebook_image_title"
             android:defaultValue=""
@@ -12,6 +12,14 @@
             android:singleLine="true"
             android:maxLines="1"
             android:summary="@string/summary_title"/>
+        -->
+
+        <ListPreference
+            android:key="FACEBOOKIMAGETITLELIST"
+            android:title="List of stored images"
+            android:dialogTitle="Choose Facebook image"
+            android:summary="Select the Facebook image"
+            />
 
         <Preference
             android:title="@string/pref_facebook_image_load"

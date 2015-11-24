@@ -339,8 +339,12 @@ public class SharedPreferenceHandler {
     private String saveToInternalStorage(Bitmap bitmap, String imgTitle, String mkey) {
         ContextWrapper cw = new ContextWrapper(hostactivity);
         // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        // Create imageDir
+        String temp_directory = String.valueOf(cw.getDir("imageDir", Context.MODE_PRIVATE)+"/"+mkey);
+        File directory = new File (temp_directory);
+        // Create sub imageDir
+        if(!directory.exists()){
+            directory.mkdir();
+        }
         File mypathFile=new File(directory,imgTitle);
         String URLTag = null;
         String TitleTag = null;

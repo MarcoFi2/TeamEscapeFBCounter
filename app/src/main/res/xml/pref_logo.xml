@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="LOGO BASIC SETTINGS">
-        <EditTextPreference
+        <!--<EditTextPreference
             android:key="LOGOIMAGETITLE"
             android:title="@string/pref_logo_image_name"
             android:defaultValue="logo_init"
@@ -12,6 +12,13 @@
             android:singleLine="true"
             android:maxLines="1"
             android:summary="@string/summary_title"/>
+        -->
+        <ListPreference
+            android:key="LOGOIMAGETITLELIST"
+            android:title="List of stored images"
+            android:dialogTitle="Choose logo image"
+            android:summary="Select the logo image"
+            />
 
         <Preference
             android:title="@string/pref_logo_image_load"

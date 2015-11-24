@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="QR CODE BASIC SETTINGS">
-        <EditTextPreference
+        <!--<EditTextPreference
             android:key="QRCODEIMAGETITLE"
             android:title="@string/pref_qrcode_image_title"
             android:defaultValue=""
@@ -12,6 +12,13 @@
             android:singleLine="true"
             android:maxLines="1"
             android:summary="@string/summary_title"/>
+        -->
+        <ListPreference
+            android:key="QRCODEIMAGETITLELIST"
+            android:title="List of stored images"
+            android:dialogTitle="Choose QR-Code image"
+            android:summary="Select the QR-Code image"
+            />
 
         <Preference
             android:title="@string/pref_qrcode_image_load"

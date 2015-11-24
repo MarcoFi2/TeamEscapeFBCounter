@@ -324,12 +324,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static void setListPreferenceImageList(ListPreference lp, String PrefTag) {
 
-        String path = "/data/data/de.teamescape.dev.teamescapefbcounter/app_imageDir";
+        String path = "/data/data/de.teamescape.dev.teamescapefbcounter/app_imageDir/"+PrefTag;
         File f = new File(path);
         File file[] = f.listFiles();
         String[] imgEntries;
         String[] imgValues;
-        //TODO add init images
 
         if(file!=null){
             imgEntries = new String[file.length+1];
@@ -345,11 +344,25 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
         int index = -1;
         switch (PrefTag){
-                case "BACKGROUND":
+                case "BACKGROUNDIMAGEURI":
                     imgEntries[0] = "background_init";
                     imgValues[0] = "background_init";
                     index = findDefaultValueIndex(settings.getString("BACKGROUNDIMAGETITLE",null),imgValues);
-                    //lp.setDefaultValue(imgValues[index]);
+                    break;
+                case "LOGOIMAGEURI":
+                    imgEntries[0] = "logo_init";
+                    imgValues[0] = "logo_init";
+                    index = findDefaultValueIndex(settings.getString("LOGOIMAGETITLE",null),imgValues);
+                    break;
+                case "FACEBOOKIMAGEURI":
+                    imgEntries[0] = "facebook_thumb_init";
+                    imgValues[0] = "facebook_thumb_init";
+                    index = findDefaultValueIndex(settings.getString("FACEBOOKIMAGETITLE",null),imgValues);
+                    break;
+                case "QRCODEIMAGEURI":
+                    imgEntries[0] = "qrcode_init";
+                    imgValues[0] = "qrcode_init";
+                    index = findDefaultValueIndex(settings.getString("QRCODEIMAGETITLE",null),imgValues);
                     break;
                 default:
             }
@@ -443,11 +456,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             inSettings = true;
             setHasOptionsMenu(true);
 
+            /*
             EditTextPreference bg_img_title = (EditTextPreference) findPreference("BACKGROUNDIMAGETITLE");
             setDefault(bg_img_title, "EditTextPreference");
-
-            //fragmentTransaction.addToBackStack("background");
-            //fragmentTransaction.commit();
 
             bg_img_title.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -464,11 +475,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
 
             });
+            */
 
             final ListPreference bg_img_listPreference = (ListPreference) findPreference("BACKGROUNDIMAGETITLELIST");
 
             // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
-            setListPreferenceImageList(bg_img_listPreference, "BACKGROUND");
+            setListPreferenceImageList(bg_img_listPreference, "BACKGROUNDIMAGEURI");
 
             bg_img_listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -606,6 +618,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             setHasOptionsMenu(true);
             inSettings = true;
 
+            /*
             EditTextPreference logo_img_title = (EditTextPreference)findPreference("LOGOIMAGETITLE");
             setDefault(logo_img_title, "EditTextPreference");
 
@@ -617,7 +630,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     EditTextPreference logo_img_title = (EditTextPreference) findPreference("LOGOIMAGETITLE");
                     if (checktitleinput(String.valueOf(newValue), "LOGOIMAGEINTERNALURL")) {
                         save(preference.getKey(), newValue);
-                        //TODO make loading of internal images possible
                         setDefault(logo_img_title, "EditTextPreference");
                         return true;
                     } else {
@@ -625,6 +637,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                 }
 
+            });
+            */
+
+            final ListPreference logo_img_listPreference = (ListPreference) findPreference("LOGOIMAGETITLELIST");
+
+            // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
+            setListPreferenceImageList(logo_img_listPreference, "LOGOIMAGEURI");
+
+            logo_img_listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    EditTextPreference logo_img_title = (EditTextPreference) findPreference("LOGOIMAGETITLE");
+                    int index = logo_img_listPreference.findIndexOfValue(newValue.toString());
+                    Toast.makeText(activity.getBaseContext(), "Logo set to: " + logo_img_listPreference.getEntries()[index], Toast.LENGTH_LONG).show();
+                    save(logo_img_title.getKey(), logo_img_listPreference.getEntries()[index]);
+                    setDefault(logo_img_title, "EditTextPreference");
+                    return true;
+                }
             });
 
             EditTextPreference logo_img_sizeratio = (EditTextPreference)findPreference("LOGOIMAGESIZERATIO");
@@ -804,6 +834,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_faceook);
             setHasOptionsMenu(true);
             inSettings = true;
+            /*
             EditTextPreference facebook_img_title = (EditTextPreference)findPreference("FACEBOOKIMAGETITLE");
             setDefault(facebook_img_title, "EditTextPreference");
 
@@ -815,7 +846,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     EditTextPreference facebook_img_title = (EditTextPreference) findPreference("FACEBOOKIMAGETITLE");
                     if(checktitleinput(String.valueOf(newValue), "FACEBOOKIMAGEINTERNALURL")) {
                         save(preference.getKey(), newValue);
-                        //TODO make loading of internal images possible
                         setDefault(facebook_img_title, "EditTextPreference");
                         return true;
                     }else{
@@ -824,6 +854,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 }
 
+            });
+            */
+
+            final ListPreference fb_img_listPreference = (ListPreference) findPreference("FACEBOOKIMAGETITLELIST");
+
+            // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
+            setListPreferenceImageList(fb_img_listPreference, "FACEBOOKIMAGEURI");
+
+            fb_img_listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    EditTextPreference fb_img_title = (EditTextPreference) findPreference("FACEBOOKIMAGETITLE");
+                    int index = fb_img_listPreference.findIndexOfValue(newValue.toString());
+                    Toast.makeText(activity.getBaseContext(), "Facebook icon set to: " + fb_img_listPreference.getEntries()[index], Toast.LENGTH_LONG).show();
+                    save(fb_img_title.getKey(), fb_img_listPreference.getEntries()[index]);
+                    setDefault(fb_img_title, "EditTextPreference");
+                    return true;
+                }
             });
 
             EditTextPreference facebook_img_sizeratio = (EditTextPreference)findPreference("FACEBOOKIMAGESIZERATIO");
@@ -1349,7 +1397,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_qr);
             setHasOptionsMenu(true);
             inSettings = true;
-
+            /*
             EditTextPreference qrcode_img_title = (EditTextPreference)findPreference("QRCODEIMAGETITLE");
             setDefault(qrcode_img_title, "EditTextPreference");
 
@@ -1367,6 +1415,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                 }
 
+            });
+            */
+
+            final ListPreference qrcode_img_listPreference = (ListPreference) findPreference("QRCODEIMAGETITLELIST");
+
+            // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
+            setListPreferenceImageList(qrcode_img_listPreference, "QRCODEIMAGEURI");
+
+            qrcode_img_listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    EditTextPreference qrcode_img_title = (EditTextPreference) findPreference("QRCODEIMAGETITLE");
+                    int index = qrcode_img_listPreference.findIndexOfValue(newValue.toString());
+                    Toast.makeText(activity.getBaseContext(), "QR-Code image set to: " + qrcode_img_listPreference.getEntries()[index], Toast.LENGTH_LONG).show();
+                    save(qrcode_img_title.getKey(), qrcode_img_listPreference.getEntries()[index]);
+                    setDefault(qrcode_img_title, "EditTextPreference");
+                    return true;
+                }
             });
 
             EditTextPreference qrcode_img_sizeratio = (EditTextPreference)findPreference("QRCODEIMAGESIZERATIO");
