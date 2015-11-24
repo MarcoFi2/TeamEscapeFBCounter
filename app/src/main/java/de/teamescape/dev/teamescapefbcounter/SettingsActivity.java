@@ -58,6 +58,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public FragmentManager fragmentManager;
     public static FragmentTransaction fragmentTransaction;
+    public static Context backgroundfragmentcontext;
+    public static Context logofragmentcontext;
+    public static Context facebookfragmentcontext;
+    public static Context qrcodefragmentcontext;
 
     //public static EditTextPreference bg_img_title;
 
@@ -397,7 +401,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-
         }
 
     }
@@ -454,6 +457,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_background);
             inSettings = true;
             setHasOptionsMenu(true);
+            backgroundfragmentcontext = getActivity();
 
             /*
             EditTextPreference bg_img_title = (EditTextPreference) findPreference("BACKGROUNDIMAGETITLE");
@@ -615,6 +619,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_logo);
             setHasOptionsMenu(true);
+            logofragmentcontext = getActivity();
             inSettings = true;
 
             /*
@@ -832,6 +837,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_faceook);
             setHasOptionsMenu(true);
+            facebookfragmentcontext = getActivity();
             inSettings = true;
             /*
             EditTextPreference facebook_img_title = (EditTextPreference)findPreference("FACEBOOKIMAGETITLE");
@@ -1395,6 +1401,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_qr);
             setHasOptionsMenu(true);
+            qrcodefragmentcontext = getActivity();
             inSettings = true;
             /*
             EditTextPreference qrcode_img_title = (EditTextPreference)findPreference("QRCODEIMAGETITLE");

@@ -42,7 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 import de.teamescape.dev.teamescapefbcounter.FullscreenActivity;
 import de.teamescape.dev.teamescapefbcounter.R;
@@ -56,7 +55,7 @@ public class SharedPreferenceHandler {
     private static final String TAG = SharedPreferenceHandler.class.getSimpleName();
     public static Activity hostactivity;
     Activity settingsactivity;
-    ProgressDialog progressDialog;
+    private Context fragmentcontext;
 
     private ImageView mContentView;
 
@@ -190,6 +189,8 @@ public class SharedPreferenceHandler {
                         break;
                     case "BACKGROUNDIMAGEURI":
                         if(mPrefs.getString(key, null)!=null){
+                            //start progressdialog => end in onpostexecute
+                            fragmentcontext = SettingsActivity.backgroundfragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
                             Log.d(TAG, "Background image uri changes were made---new internal URL and Title are set");
                         }
@@ -200,6 +201,7 @@ public class SharedPreferenceHandler {
                         break;
                     case "LOGOIMAGEURI":
                         if(mPrefs.getString(key, null)!=null) {
+                            fragmentcontext = SettingsActivity.logofragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
                             Log.d(TAG, "Logo image uri changes were made---new internal URL and Title are set");
                         }
@@ -215,6 +217,7 @@ public class SharedPreferenceHandler {
                         break;
                     case "FACEBOOKIMAGEURI":
                         if(mPrefs.getString(key, null)!=null) {
+                            fragmentcontext = SettingsActivity.facebookfragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
                         }
                         //TODO
@@ -260,6 +263,7 @@ public class SharedPreferenceHandler {
                         break;
                     case "QRCODEIMAGEURI":
                         if(mPrefs.getString(key, null)!=null) {
+                            fragmentcontext = SettingsActivity.qrcodefragmentcontext;
                             reactToImageUriChanges(mPrefs, key);
                         }
                         //TODO
@@ -667,6 +671,17 @@ public class SharedPreferenceHandler {
         Log.d(TAG, "Filename: " + filename[0]);
 
         AsyncTask<Uri, Void, Bitmap> imageLoadAsyncTask = new AsyncTask<Uri, Void, Bitmap>(){
+            ProgressDialog progressDialog;
+
+            @Override
+            protected void onPreExecute(){
+                super.onPreExecute();
+                progressDialog = new ProgressDialog(fragmentcontext);
+                progressDialog.setMessage("Please wait, image is loading");
+                progressDialog.setCancelable(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.show();
+            }
 
             @Override
             protected Bitmap doInBackground(Uri... uris) {
@@ -683,8 +698,10 @@ public class SharedPreferenceHandler {
                 try{
                     String storageDirectory = saveToInternalStorage(bitmap, filename[0], mkey);
                     Log.d(TAG, filename[0] + " was stored to: " + storageDirectory);
+                    progressDialog.dismiss();
                 }catch(Exception e){
                     Log.d(TAG, "onPostExecute: "+e.toString());
+                    progressDialog.dismiss();
                 }
             }
         };
