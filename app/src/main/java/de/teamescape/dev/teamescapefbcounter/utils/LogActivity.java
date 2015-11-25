@@ -65,8 +65,8 @@ public class LogActivity extends Activity {
             //output
             TextView tv = (TextView)findViewById(R.id.logtext_content);
             tv.setText(
-                    "DEBUGLOG --> Runtime.getRuntime().exec(logcat -d): " + dlog.toString()+
-                    "ERRORLOG --> Runtime.getRuntime().exec(logcat -e): " + elog.toString());
+                    "DEBUGLOG --> Runtime.getRuntime().exec(logcat -d): " + dlog.toString()+'\n'+'\n'+
+                    "ERRORLOG --> Runtime.getRuntime().exec(logcat -e): " + elog.toString()+'\n'+'\n');
         } catch (IOException e) {
         }
 

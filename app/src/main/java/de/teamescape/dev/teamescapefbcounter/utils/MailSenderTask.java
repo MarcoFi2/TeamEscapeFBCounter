@@ -21,6 +21,7 @@ public class MailSenderTask extends AsyncTask {
     @Override
     protected Object doInBackground(Object[] params) {
         try {
+            //send log report to dev mail account
             GMailSender sender = new GMailSender("developteamescape@gmail.com", "binichschondrin?");
             sender.sendMail("Log Report TeamEscape Facebook Counter",
                     mailContent,
