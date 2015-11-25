@@ -33,7 +33,13 @@ dependencies {
     //compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:support-v4:23.1.0'
-    compile 'com.facebook.android:facebook-android-sdk:4.7.0'
+    //compile 'com.facebook.android:facebook-android-sdk:4.7.0'
+    //compile file 'utils/libs/activation.jar'
+    //compile file 'libs/additionnal.jar'
+    //compile file 'libs/mail.jar'
+    compile files('src/main/java/de/teamescape/dev/teamescapefbcounter/libs/activation.jar')
+    compile files('src/main/java/de/teamescape/dev/teamescapefbcounter/libs/additionnal.jar')
+    compile files('src/main/java/de/teamescape/dev/teamescapefbcounter/libs/mail.jar')
 }
 
 

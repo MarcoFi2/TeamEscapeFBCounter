@@ -11,6 +11,12 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/logsendmailbutton_content"
+        android:text="send log to admin"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/logexitbutton_content"
         android:text="exit log"
         />

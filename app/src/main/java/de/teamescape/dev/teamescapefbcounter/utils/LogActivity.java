@@ -1,13 +1,17 @@
 package de.teamescape.dev.teamescapefbcounter.utils;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +20,9 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import de.teamescape.dev.teamescapefbcounter.*;
 
@@ -23,12 +30,15 @@ import de.teamescape.dev.teamescapefbcounter.*;
  * Created by Marco on 07.11.2015.
  */
 public class LogActivity extends Activity {
+
+    private Activity logactivity;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        //setupActionBar();
         setContentView(R.layout.logscreen);
+        logactivity = this;
 
         try {
             ///DEBUG LOG
@@ -79,6 +89,32 @@ public class LogActivity extends Activity {
             }
         });
 
+        Button logsendmailbutton_content= (Button) findViewById(R.id.logsendmailbutton_content);
+        logsendmailbutton_content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView tv = (TextView) findViewById(R.id.logtext_content);
+                final String systmInfo = getSystemInformation();
+                final String stringOfLog =systmInfo +'\n'+ tv.getText().toString();
+                MailSenderTask mailsender = new MailSenderTask(stringOfLog);
+                Boolean sendstatus = false;
+                try {
+                    sendstatus = (boolean) mailsender.execute(stringOfLog).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                if(sendstatus){
+                    Toast.makeText(logactivity, "email send", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(logactivity, "something went wrong", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
         Button exitbutton= (Button) findViewById(R.id.logexitbutton_content);
         exitbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +124,55 @@ public class LogActivity extends Activity {
         });
     }
 
+    private String getSystemInformation() {
+        String systemInformation =
+                " Android Build SDK: "+android.os.Build.VERSION.SDK_INT+
+                " Android Build Version:"+ Build.VERSION.RELEASE+
+                " Hardware Manufacturer: "+Build.MANUFACTURER+
+                " Hardware Model: "+Build.MODEL+
+                " Hardware Product: "+Build.PRODUCT+
+                " Hardware Brand: "+Build.BRAND+
+                " User Name: "+getUsername()+
+                " User Email: "+getUserEmail();
+        return systemInformation;
+    }
 
+    public String getUsername() {
+        AccountManager manager = AccountManager.get(this);
+        Account[] accounts = manager.getAccountsByType("com.google");
+        List<String> possibleEmails = new LinkedList<String>();
+
+        for (Account account : accounts) {
+            // TODO: Check possibleEmail against an email regex or treat
+            // account.name as an email address only for certain account.type values.
+            possibleEmails.add(account.name);
+        }
+
+        if (!possibleEmails.isEmpty() && possibleEmails.get(0) != null) {
+            String email = possibleEmails.get(0);
+            String[] parts = email.split("@");
+
+            if (parts.length > 1)
+                return parts[0];
+        }
+        return null;
+    }
+
+    public String getUserEmail() {
+        AccountManager manager = AccountManager.get(this);
+        Account[] accounts = manager.getAccountsByType("com.google");
+        List<String> possibleEmails = new LinkedList<String>();
+
+        for (Account account : accounts) {
+            // TODO: Check possibleEmail against an email regex or treat
+            // account.name as an email address only for certain account.type values.
+            possibleEmails.add(account.name);
+        }
+
+        if (!possibleEmails.isEmpty() && possibleEmails.get(0) != null) {
+            return possibleEmails.get(0);
+        }
+        return null;
+    }
 
 }
