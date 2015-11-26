@@ -68,6 +68,7 @@ public class SharedPreferenceHandler {
     public Double   FACEBOOKIMAGETOPMARGIN; //Value 0.00 - 1.00
     public String   FACEBOOKFQLCALLURL;
 
+    public Boolean  COUNTERANIMATION;
     public String   COUNTERTEXTSIZE;
     public Double   COUNTERTEXTLEFTMARGIN;
     public Double   COUNTERTEXTTOPMARGIN;
@@ -131,6 +132,7 @@ public class SharedPreferenceHandler {
             this.FACEBOOKFQLCALLURL = getValue(context, "FACEBOOKFQLCALLURL");
 
             this.LASTKNOWNFACEBOOKCOUNT = getValue(context, "LASTKNOWNFACEBOOKCOUNT");
+            this.COUNTERANIMATION = Boolean.valueOf(getValue(context, "COUNTERANIMATION"));
             this.COUNTERTEXTSIZE = getValue(context, "COUNTERTEXTSIZE");
             this.COUNTERTEXTLEFTMARGIN = Double.parseDouble(getValue(context, "COUNTERTEXTLEFTMARGIN"));
             this.COUNTERTEXTTOPMARGIN = Double.parseDouble(getValue(context, "COUNTERTEXTTOPMARGIN"));
@@ -222,6 +224,9 @@ public class SharedPreferenceHandler {
                         break;
                     case "FACEBOOKFQLCALLURL":
                         Log.d(TAG, "Facebook fql call was changed: "+mPrefs.getString(key,null));
+                        break;
+                    case "COUNTERANIMATION":
+                        Log.d(TAG, "Counter animation was switched: "+mPrefs.getString(key,null));
                         break;
                     case "COUNTERTEXTSIZE":
                         Log.d(TAG, "Counter text size was changed: "+mPrefs.getString(key,null));
@@ -509,6 +514,9 @@ public class SharedPreferenceHandler {
 
         save(context, "FACEBOOKFQLCALLURL", "https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
         Log.d(TAG, "FACEBOOKFQLCALLURL set to https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
+
+        save(context, "COUNTERANIMATION", "true");
+        Log.d(TAG, "COUNTERANIMATION set to true");
 
         save(context, "COUNTERTEXTSIZE", "60");
         Log.d(TAG, "COUNTERTEXTSIZE set to 60");

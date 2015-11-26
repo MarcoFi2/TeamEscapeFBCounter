@@ -6,12 +6,9 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.text.ClipboardManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,10 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.teamescape.dev.teamescapefbcounter.*;
+import de.teamescape.dev.teamescapefbcounter.R;
 
 /**
- * Created by Marco on 07.11.2015.
+ * Created by Triax Sijambo on 07.11.2015.
  */
 public class LogActivity extends Activity {
 

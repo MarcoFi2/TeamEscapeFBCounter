@@ -17,6 +17,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="COUNTER EXPERT SETTINGS">
+        <SwitchPreference
+            android:key="COUNTERANIMATION"
+            android:title="@string/pref_counter_animation"
+            android:defaultValue="true" />
 
         <EditTextPreference
             android:key="COUNTERTEXTLEFTMARGIN"

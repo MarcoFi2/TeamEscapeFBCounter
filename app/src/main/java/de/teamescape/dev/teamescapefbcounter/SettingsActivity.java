@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,24 +17,21 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
-
-import de.teamescape.dev.teamescapefbcounter.utils.SharedPreferenceHandler;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -958,6 +954,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_counter);
             setHasOptionsMenu(true);
             inSettings = true;
+
+            SwitchPreference counter_animation = (SwitchPreference) findPreference("COUNTERANIMATION");
+            counter_animation.setChecked(Boolean.parseBoolean(settings.getString(counter_animation.getKey(), null)));
+            counter_animation.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference,
+                                                  Object newValue) {
+                    save(preference.getKey(), newValue);
+                    return true;
+                }
+
+            });
+
+
+
 
             EditTextPreference counter_text_size = (EditTextPreference)findPreference("COUNTERTEXTSIZE");
             setDefault(counter_text_size, "EditTextPreference");

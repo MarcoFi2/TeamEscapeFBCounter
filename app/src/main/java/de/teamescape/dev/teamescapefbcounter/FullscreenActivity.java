@@ -538,31 +538,51 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
     private String formatcount(String formatedcount) {
-        char[] input = formatedcount.toCharArray();
-        char[] prepareoutput = new char[6];
-        int j = 0;
-        //fill up to 6 digits
-        for (int i=0; i<prepareoutput.length;++i){
-            if(prepareoutput.length-(input.length +i )>0){
-                prepareoutput[i]='0';
-            }else{
-                prepareoutput[i]=input[j];
-                ++j;
-            }
-        }
-        //insert : into digits
-        char[]output = new char[8];
-        int k =0;
-        for (int i=0; i<output.length;++i){
-            if(i==2 || i==5){
-                output[i]=':';
-            }else{
-                output[i]=prepareoutput[k];
-                ++k;
-            }
-        }
 
-        return new String (output);
+        char[] input = formatedcount.toCharArray();
+        if(sharedPreferenceHandler.COUNTERANIMATION){
+
+            char[] prepareoutput = new char[6];
+            int j = 0;
+            //fill up to 6 digits
+            for (int i=0; i<prepareoutput.length;++i){
+                if(prepareoutput.length-(input.length +i )>0){
+                    prepareoutput[i]='0';
+                }else{
+                    prepareoutput[i]=input[j];
+                    ++j;
+                }
+            }
+            //insert : into digits
+            char[]output = new char[8];
+            int k =0;
+            for (int i=0; i<output.length;++i){
+                if(i==2 || i==5){
+                    output[i]=':';
+                }else{
+                    output[i]=prepareoutput[k];
+                    ++k;
+                }
+            }
+
+            return new String (output);
+        }else{
+            if(input.length>3){
+                char[]output = new char[input.length+1];
+                int k =0;
+                for (int i=0; i<output.length;++i){
+                    if(i== output.length-4){
+                        output[i]='.';
+                    }else{
+                        output[i]=input[k];
+                        ++k;
+                    }
+                }
+                return new String (output);
+            }else{
+                return new String (input);
+            }
+        }
     }
 
     private Bitmap getBitmapFromInternalURL(String url, String title) {

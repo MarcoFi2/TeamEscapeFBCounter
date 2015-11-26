@@ -1,14 +1,11 @@
 package de.teamescape.dev.teamescapefbcounter.utils;
 
 /**
- * Created by Marco on 25.11.2015.
+ * Created by Triax Sijambo on 25.11.2015.
  */
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 
 public class MailSenderTask extends AsyncTask {

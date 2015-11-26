@@ -38,6 +38,7 @@
     <string name="pref_facebook_last_known_count">Last known Facebook likes</string>
 
     <!-- Counter settings -->
+    <string name="pref_counter_animation">Counter animation</string>
     <string name="pref_header_counter">Counter settings </string>
     <string name="pref_counter_text_size">Counter font size</string>
     <string name="pref_counter_text_left_margin">Counter left margin</string>

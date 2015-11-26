@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.sax.Element;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -12,9 +11,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,38 +50,51 @@ public class AsyncCounterHandler extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... params) {
         settings = context.getSharedPreferences(TEFBC_NAME, Context.MODE_PRIVATE);
-
-                if (switcher) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                String countertext = formatcount(getValue(context, "LASTKNOWNFACEBOOKCOUNT"), true);
-                                view.setText(countertext);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
+        if(Boolean.valueOf(getValue(context, "COUNTERANIMATION"))) {
+            if (switcher) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String countertext = formatcountanimated(getValue(context, "LASTKNOWNFACEBOOKCOUNT"), true);
+                            view.setText(countertext);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                    switcher = !switcher;
-                } else {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try{
-                                String countertext = formatcount(getValue(context, "LASTKNOWNFACEBOOKCOUNT"), false);
-                                view.setText(countertext);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
+                    }
+                });
+                switcher = !switcher;
+            } else {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String countertext = formatcountanimated(getValue(context, "LASTKNOWNFACEBOOKCOUNT"), false);
+                            view.setText(countertext);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                    switcher = !switcher;
-                }
-
+                    }
+                });
+                switcher = !switcher;
+            }
+        }
         //ToDo send request every x ms
         long currenttime= System.currentTimeMillis();
         if(dorequest) {
+            if(!Boolean.valueOf(getValue(context, "COUNTERANIMATION"))){
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String countertext = formatcountnonanimated(getValue(context, "LASTKNOWNFACEBOOKCOUNT"));
+                            view.setText(countertext);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
             try {
                 URL url = new URL("https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
                 //Test Fritz.de
@@ -113,7 +123,29 @@ public class AsyncCounterHandler extends AsyncTask<String, String, String> {
         return null;
         }
 
-    private String formatcount(String formatedcount, boolean substitute) {
+    private String formatcountnonanimated(String formatedcount) {
+        //return blank count with . at pos
+        char[] input = formatedcount.toCharArray();
+        //insert . into digits
+        if(input.length>3){
+            char[]output = new char[input.length+1];
+            int k =0;
+            for (int i=0; i<output.length;++i){
+                if(i== output.length-4){
+                    output[i]='.';
+                }else{
+                    output[i]=input[k];
+                    ++k;
+                }
+            }
+            return new String (output);
+        }else{
+            return new String (input);
+        }
+
+    }
+
+    private String formatcountanimated(String formatedcount, boolean substitute) {
             char[] input = formatedcount.toCharArray();
             char[] prepareoutput = new char[6];
             int j = 0;
