@@ -90,9 +90,10 @@ public class LogActivity extends Activity {
         logsendmailbutton_content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView tv = (TextView) findViewById(R.id.logtext_content);
+                TextView tv1 = (TextView) findViewById(R.id.describtiontext_content);
+                TextView tv2 = (TextView) findViewById(R.id.logtext_content);
                 final String systmInfo = getSystemInformation();
-                final String stringOfLog =systmInfo +'\n'+ tv.getText().toString();
+                final String stringOfLog =tv1.getText().toString() + '\n' + systmInfo +'\n'+ tv2.getText().toString();
                 MailSenderTask mailsender = new MailSenderTask(stringOfLog);
                 Boolean sendstatus = false;
                 try {

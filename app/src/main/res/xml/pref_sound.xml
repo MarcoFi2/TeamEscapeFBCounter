@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="COUNTER EXPERT SETTINGS">
+
+        <SwitchPreference
+            android:key="SOUNDMUTE"
+            android:title="@string/pref_sound_mute"
+            android:defaultValue="true" />
+        <ListPreference
+            android:key="SOUNDTITLELIST"
+            android:title="@string/pref_sound_ringtone"
+            android:dialogTitle="Choose background sound for counter changes"
+            android:summary="Select background sound for counter changes"
+            />
+        <Preference
+            android:title="@string/pref_sound_load"
+            android:key="SOUNDURI"
+            android:summary="@string/summary_load_from_gallery">
+            <intent android:action="android.settings.BG_File_Manager" />
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="DEFAULT SETTINGS">
+        <Preference
+            android:key="restore_sound"
+            android:title="Reset sound to default"
+            android:summary="Reset sound to default settings"/>
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -96,7 +96,8 @@ public class AsyncCounterHandler extends AsyncTask<String, String, String> {
                 });
             }
             try {
-                URL url = new URL("https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
+                URL url = new URL(getValue(context,"FACEBOOKFQLCALLURL"));
+                //URL url = new URL("https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
                 //Test Fritz.de
                 //URL url = new URL("https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/Fritz.de%22");
 
@@ -109,6 +110,13 @@ public class AsyncCounterHandler extends AsyncTask<String, String, String> {
                 //int totalCount = Integer.parseInt(xPath.evaluate("//total_count/text()", doc));
                 //int shareCount = Integer.parseInt(xPath.evaluate("//share_count/text()", doc));
                 //int clickCount = Integer.parseInt(xPath.evaluate("//click_count/text()", doc));
+
+                //play sound when counter increases increases only
+                if(Integer.valueOf(getValue(context, "LASTKNOWNFACEBOOKCOUNT"))<=likeCount){
+                    save("FACEBOOKCOUNTINCREASED",true);
+                }else{
+                    save("FACEBOOKCOUNTINCREASED",false);
+                }
                 save("LASTKNOWNFACEBOOKCOUNT", likeCount);
                 publishProgress(String.valueOf(likeCount));
                 Log.d(TAG, "FB FQL request fired with the result:" + likeCount);

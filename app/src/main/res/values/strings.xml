@@ -71,4 +71,10 @@
     <string name="title_activity_settings_activity_test">Settings</string>
     <string name="exit_button">EXIT</string>
 
+    <!-- Sound settings -->
+    <string name="pref_header_sound">Sound settings</string>
+    <string name="pref_sound_mute">Mute sound</string>
+    <string name="pref_sound_ringtone">List of stored ringtones</string>
+    <string name="pref_sound_load">Load Audio from device</string>
+
 </resources>

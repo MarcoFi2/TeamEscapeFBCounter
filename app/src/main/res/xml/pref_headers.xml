@@ -25,8 +25,12 @@
         android:icon="@drawable/ic_text_black_24dp" />
 
     <header
-        android:fragment="de.teamescape.dev.teamescapefbcounter.SettingsActivity$QRPreferenceFragment"
-        android:title="@string/pref_header_qr" android:icon="@drawable/ic_qr_black_24dp" />
+    android:fragment="de.teamescape.dev.teamescapefbcounter.SettingsActivity$QRPreferenceFragment"
+    android:title="@string/pref_header_qr" android:icon="@drawable/ic_qr_black_24dp" />
+
+    <header
+        android:fragment="de.teamescape.dev.teamescapefbcounter.SettingsActivity$SoundPreferenceFragment"
+        android:title="@string/pref_header_sound" android:icon="@drawable/ic_sound_black24dp" />
 
     <header
         android:fragment="de.teamescape.dev.teamescapefbcounter.SettingsActivity$LogPreferenceFragment"

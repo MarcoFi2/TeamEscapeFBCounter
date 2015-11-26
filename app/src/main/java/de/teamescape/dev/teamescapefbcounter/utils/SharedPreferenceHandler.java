@@ -15,6 +15,8 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -29,10 +31,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import de.teamescape.dev.teamescapefbcounter.R;
 import de.teamescape.dev.teamescapefbcounter.SettingsActivity;
@@ -46,6 +50,8 @@ public class SharedPreferenceHandler {
     public static Activity hostactivity;
     Activity settingsactivity;
     private Context fragmentcontext;
+
+    private MediaPlayer mMediaPlayer;
 
     private ImageView mContentView;
 
@@ -67,6 +73,7 @@ public class SharedPreferenceHandler {
     public Double   FACEBOOKIMAGELEFTMARGIN; //Value 0.00 - 1.00
     public Double   FACEBOOKIMAGETOPMARGIN; //Value 0.00 - 1.00
     public String   FACEBOOKFQLCALLURL;
+    public Boolean  FACEBOOKCOUNTINCREASED;
 
     public Boolean  COUNTERANIMATION;
     public String   COUNTERTEXTSIZE;
@@ -93,6 +100,11 @@ public class SharedPreferenceHandler {
     public Double   TEXTCONTENTBUTTOMTOPMARGIN;     //Value 0.00 - 1.00
     public Boolean  TEXTCONTENTBUTTOMHYPERLINK;
     public String   TEXTCONTENTBUTTOMFONTSIZE;
+
+    public String   SOUNDTITLE;
+    public String   SOUNDINTERNALURL;
+    public String   SOUNDURI;
+    public Boolean  SOUNDMUTE;
 
     public String   LANGUAGE;
     public String   FIRSTRUN;
@@ -130,6 +142,7 @@ public class SharedPreferenceHandler {
             this.FACEBOOKIMAGELEFTMARGIN = Double.parseDouble(getValue(context, "FACEBOOKIMAGELEFTMARGIN"));
             this.FACEBOOKIMAGETOPMARGIN = Double.parseDouble(getValue(context, "FACEBOOKIMAGETOPMARGIN"));
             this.FACEBOOKFQLCALLURL = getValue(context, "FACEBOOKFQLCALLURL");
+            this.FACEBOOKCOUNTINCREASED = Boolean.valueOf(getValue(context, "FACEBOOKCOUNTINCREASED"));
 
             this.LASTKNOWNFACEBOOKCOUNT = getValue(context, "LASTKNOWNFACEBOOKCOUNT");
             this.COUNTERANIMATION = Boolean.valueOf(getValue(context, "COUNTERANIMATION"));
@@ -155,6 +168,11 @@ public class SharedPreferenceHandler {
             this.TEXTCONTENTBUTTOMTOPMARGIN = Double.parseDouble(getValue(context, "TEXTCONTENTBUTTOMTOPMARGIN"));
             this.TEXTCONTENTBUTTOMFONTSIZE = getValue(context, "TEXTCONTENTBUTTOMFONTSIZE");
             this.TEXTCONTENTBUTTOMHYPERLINK = Boolean.valueOf(getValue(context, "TEXTCONTENTBUTTOMHYPERLINK"));
+
+            this.SOUNDTITLE = getValue(context,"SOUNDTITLE");
+            this.SOUNDINTERNALURL = getValue(context,"SOUNDINTERNALURL");
+            this.SOUNDURI = getValue(context,"SOUNDURI");
+            this.SOUNDMUTE = Boolean.valueOf(getValue(context, "SOUNDMUTE"));
 
             this.LANGUAGE = getValue(context, "LANGUAGE");
             this.FIRSTRUN = getValue(context,"FIRSTRUN");
@@ -225,6 +243,9 @@ public class SharedPreferenceHandler {
                     case "FACEBOOKFQLCALLURL":
                         Log.d(TAG, "Facebook fql call was changed: "+mPrefs.getString(key,null));
                         break;
+                    case "FACEBOOKCOUNTINCREASED":
+                        Log.d(TAG, "Facebook count increased was changed: "+mPrefs.getString(key,null));
+                        break;
                     case "COUNTERANIMATION":
                         Log.d(TAG, "Counter animation was switched: "+mPrefs.getString(key,null));
                         break;
@@ -238,6 +259,9 @@ public class SharedPreferenceHandler {
                         Log.d(TAG, "Counter text top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "LASTKNOWNFACEBOOKCOUNT":
+                        if(Boolean.valueOf(mPrefs.getString("FACEBOOKCOUNTINCREASED",null)) && !Boolean.valueOf(mPrefs.getString("SOUNDMUTE",null))){
+                            playSound();
+                        }
                         Log.d(TAG, "FB counter updated to: " + mPrefs.getString(key,null));
                         break;
                     case "COUNTERUPDATEINTEVAL":
@@ -294,6 +318,19 @@ public class SharedPreferenceHandler {
                     case "TEXTCONTENTBUTTOMHYPERLINK":
                         Log.d(TAG, "text content buttom hyperlink value was changed: "+mPrefs.getString(key,null));
                         break;
+                    case "SOUNDTITLE":
+                        Log.d(TAG, "sound title was changed: "+mPrefs.getString(key,null));
+                        break;
+                    case "SOUNDURI":
+                        if(mPrefs.getString(key, null)!=null) {
+                            fragmentcontext = SettingsActivity.soundfragmentcontext;
+                            reactToSoundUriChanges(mPrefs, key);
+                        }
+                        Log.d(TAG, "sound uri was changed: "+mPrefs.getString(key,null));
+                        break;
+                    case "SOUNDMUTE":
+                        Log.d(TAG, "sound mute value was changed: "+mPrefs.getString(key,null));
+                        break;
                     case "FIRSTRUN":
                         Log.d(TAG, "first run value was changed: "+mPrefs.getString(key,null));
                         break;
@@ -304,6 +341,31 @@ public class SharedPreferenceHandler {
         };
 
         mPrefs.registerOnSharedPreferenceChangeListener(splistener);
+    }
+
+    private void playSound(){
+
+        MediaPlayer mMediaPlayer;
+
+        try{
+            String strSoundUrl = mPrefs.getString("SOUNDINTERNALURL",null);
+            Uri soundUri = Uri.parse(strSoundUrl);
+            mMediaPlayer = MediaPlayer.create(hostactivity,soundUri);
+            Log.d(TAG, "Sound: custom ringtone");
+        }catch(Exception e){
+            Log.d(TAG, "Sound: default ringtone");
+            mMediaPlayer = MediaPlayer.create(hostactivity,R.raw.default_ringtone);
+        }
+
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        final MediaPlayer finalMMediaPlayer = mMediaPlayer;
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer arg0) {
+                finalMMediaPlayer.start();
+
+            }
+        });
     }
 
     private String formatcount(String formatedcount) {
@@ -429,10 +491,70 @@ public class SharedPreferenceHandler {
         }
     }
 
-    public static String getMimeType(String url){
+    private void saveAudioToInternalStorage(String sounduri) {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            File file = new File(sounduri);
+
+            in = new FileInputStream(file);
+            String soundTitle = file.getName();
+            String MimeType = getMimeType(file.getAbsolutePath() + "/" + soundTitle);
+            ContextWrapper cw = new ContextWrapper(hostactivity);
+            String temp_directory = String.valueOf(cw.getDir("soundDir", Context.MODE_PRIVATE));
+            File directory = new File (temp_directory);
+
+            if(!directory.exists()){
+                directory.mkdir();
+            }
+            File mypathFile=new File(directory,soundTitle);
+            out = new FileOutputStream(mypathFile);
+
+            String URLTag = "SOUNDINTERNALURL";
+            String TitleTag = "SOUNDTITLE";
+
+            //TODO check if file exists !attention file is created before
+            /*if(mypathFile.exists()){
+                Toast.makeText(hostactivity, "File already exists in storage", Toast.LENGTH_SHORT).show();
+                save(hostactivity, URITag, file.getAbsolutePath());
+                save(hostactivity,TitleTag, soundTitle);
+            }else {*/
+                if (MimeType == "audio/mpeg") {
+                    try {
+                        copyFile(in, out);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                    }
+                    //only change URL and Title if the input was successful
+                    save(hostactivity, URLTag, file.getAbsolutePath());
+                    save(hostactivity, TitleTag, soundTitle);
+                }
+            //}
+
+            in.close();
+            in = null;
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
+
+    public static String getMimeType(String url) {
         String type = null;
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if(extension!=null){
+        if (extension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
         return type;
@@ -515,6 +637,9 @@ public class SharedPreferenceHandler {
         save(context, "FACEBOOKFQLCALLURL", "https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
         Log.d(TAG, "FACEBOOKFQLCALLURL set to https://api.facebook.com/method/fql.query?query=select%20like_count,%20total_count,%20share_count,%20click_count%20from%20link_stat%20where%20url=%22www.facebook.com/TeamEscapeDE%22");
 
+        save(context, "FACEBOOKCOUNTINCREASED", "false");
+        Log.d(TAG, "FACEBOOKCOUNTINCREASED set to false");
+
         save(context, "COUNTERANIMATION", "true");
         Log.d(TAG, "COUNTERANIMATION set to true");
 
@@ -572,6 +697,12 @@ public class SharedPreferenceHandler {
         save(context, "TEXTCONTENTBUTTOMHYPERLINK", "false");
         Log.d(TAG, "TEXTCONTENTBUTTOMHYPERLINK set to false");
 
+        save(context, "SOUNDTITLE", "default_ringtone");
+        Log.d(TAG, "SOUNDTITLE set to default_ringtone");
+
+        save(context, "SOUNDMUTE", "false");
+        Log.d(TAG, "SOUNDMUTE set to false");
+
         save(context, "LANGUAGE", "DE");
         Log.d(TAG, "LANGUAGE set to DE");
 
@@ -604,7 +735,6 @@ public class SharedPreferenceHandler {
     }
 
     /////////////////////////sharedproperties update Section///////////////////////////
-
 
     private void reactToImageUriChanges(SharedPreferences mPrefs, final String key) {
         String mPath = getPath(hostactivity, Uri.parse(mPrefs.getString(key, null)));
@@ -646,6 +776,42 @@ public class SharedPreferenceHandler {
                     Log.d(TAG, "onPostExecute: "+e.toString());
                     progressDialog.dismiss();
                 }
+            }
+        };
+
+        imageLoadAsyncTask.execute(Uri.parse(this.mPrefs.getString(key, null)));
+    }
+
+    private void reactToSoundUriChanges(final SharedPreferences mPrefs, final String key){
+        final String mPath = getPath(hostactivity, Uri.parse(mPrefs.getString(key, null)));
+        //TODO Filename from Google drive
+        final String[] filename = {mPath.substring((mPath != null ? mPath.lastIndexOf("/") : 0) + 1)};
+        Log.d(TAG, "Sound Path: " + mPath);
+        Log.d(TAG, "Filename: " + filename[0]);
+
+        AsyncTask<Uri, Void, File> imageLoadAsyncTask = new AsyncTask<Uri, Void, File>(){
+            ProgressDialog progressDialog;
+
+            @Override
+            protected void onPreExecute(){
+                super.onPreExecute();
+                progressDialog = new ProgressDialog(fragmentcontext);
+                progressDialog.setMessage("Please wait, audio file is loading");
+                progressDialog.setCancelable(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.show();
+            }
+
+            @Override
+            protected File doInBackground(Uri... uris) {
+                saveAudioToInternalStorage(mPath);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(File audio){
+                    Log.d(TAG, filename[0] + " was stored to: ");
+                    progressDialog.dismiss();
             }
         };
 

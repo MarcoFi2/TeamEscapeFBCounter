@@ -6,8 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/logbutton_content"
-        android:text="copy to clipboard"
-        />
+        android:text="copy to clipboard" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,6 +20,22 @@
         android:text="exit log"
         />
     <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="DESCRIBTION"
+        style="?android:attr/listSeparatorTextViewStyle" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/describtiontext_content"
+        android:hint="insert error describtion"
+        android:inputType="text"/>
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="LOG"
+        style="?android:attr/listSeparatorTextViewStyle" />
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Log Text"
@@ -32,5 +47,5 @@
         android:textIsSelectable="true"
         android:minWidth="20dp"
         android:enabled="true"
-        android:editable="true" />
+         />
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,6 +59,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static Context logofragmentcontext;
     public static Context facebookfragmentcontext;
     public static Context qrcodefragmentcontext;
+    public static Context soundfragmentcontext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +147,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || CounterPreferenceFragment.class.getName().equals(fragmentName)
                 || TextPreferenceFragment.class.getName().equals(fragmentName)
                 || QRPreferenceFragment.class.getName().equals(fragmentName)
+                || SoundPreferenceFragment.class.getName().equals(fragmentName)
                 || LogPreferenceFragment.class.getName().equals(fragmentName);
     }
 
@@ -161,6 +164,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 SwitchPreference temp_switch = (SwitchPreference)pref;
                 temp_switch.setChecked(Boolean.parseBoolean(settings.getString(pref.getKey(),null)));
                 Log.d(TAG, "shared preference " + pref.getKey() + " init with " + settings.getString(pref.getKey(), null));
+                break;
+            case "RingtonePreference":
+                //TODO
                 break;
             default:
         }
@@ -260,12 +266,42 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         lp.setValueIndex(index);
     }
 
-    private static int findDefaultValueIndex(String backgroundimagetitle, String[] imgValues) {
+    public static void setListPreferenceSoundList(ListPreference lp){
+        String path = "/data/data/de.teamescape.dev.teamescapefbcounter/app_soundDir/";
+        File f = new File(path);
+        File file[] = f.listFiles();
+        String[] sndEntries;
+        String[] sndValues;
 
-        String defaultValue = backgroundimagetitle;
+        if(file!=null){
+            sndEntries = new String[file.length+1];
+            sndValues = new String[file.length+1];
+            for (int i=1; i < file.length+1; i++)
+            {
+                sndEntries[i] = file[i-1].getName();
+                sndValues[i]=file[i-1].getName();
+            }
+        }else{
+            sndEntries = new String[1];
+            sndValues = new String[1];
+        }
         int index = -1;
-        for (int i=0;i<imgValues.length;i++) {
-            if (imgValues[i].equals(defaultValue)) {
+
+        sndEntries[0] = "default_ringtone";
+        sndValues[0] = "default_ringtone";
+        index = findDefaultValueIndex(settings.getString("SOUNDTITLE",null),sndValues);
+
+        lp.setEntries(sndEntries);
+        lp.setEntryValues(sndValues);
+        lp.setValueIndex(index);
+    }
+
+    private static int findDefaultValueIndex(String lookuptitle, String[] values) {
+
+        String defaultValue = lookuptitle;
+        int index = -1;
+        for (int i=0;i<values.length;i++) {
+            if (values[i].equals(defaultValue)) {
                 index = i;
                 break;
             }
@@ -1385,7 +1421,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                     save("QRCODEIMAGESIZERATIO", "0.1");
                                     save("QRCODEIMAGELEFTMARGIN", "0.85");
                                     save("QRCODEIMAGETOPMARGIN", "0.8");
-                                    Toast.makeText(getActivity(), "logo image was set to default setting", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "QR-Code image was set to default setting", Toast.LENGTH_SHORT).show();
 
                                 }})
                             .setNegativeButton(android.R.string.no, null).show();
@@ -1447,6 +1483,157 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Log.d(TAG, "originalURI was saved: " + originalUri);
         }
 
+    }
+
+    public static class SoundPreferenceFragment extends PreferenceFragment {
+        final int PICK_SOUND_REQUEST = 3;
+        final int PICK_SOUND_REQUEST_KITKAT=4;
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_sound);
+            setHasOptionsMenu(true);
+            soundfragmentcontext = getActivity();
+            inSettings = true;
+
+            SwitchPreference sound_mute = (SwitchPreference) findPreference("SOUNDMUTE");
+            sound_mute.setChecked(Boolean.parseBoolean(settings.getString(sound_mute.getKey(), null)));
+            sound_mute.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference,
+                                                  Object newValue) {
+                    save(preference.getKey(), newValue);
+                    return true;
+                }
+
+            });
+
+            final ListPreference sound_ringtone_listPreference = (ListPreference) findPreference("SOUNDTITLELIST");
+
+            // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
+            setListPreferenceSoundList(sound_ringtone_listPreference);
+
+            sound_ringtone_listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                    int index = sound_ringtone_listPreference.findIndexOfValue(newValue.toString());
+                    Toast.makeText(activity.getBaseContext(), "Sound set to: " + sound_ringtone_listPreference.getEntries()[index], Toast.LENGTH_LONG).show();
+                    save("SOUNDINTERNALURL",getSoundUrl(sound_ringtone_listPreference.getEntries()[index]));
+                    return true;
+                }
+            });
+
+            Preference sound_restore = (Preference) findPreference("restore_sound");
+
+            sound_restore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("QR code image reset")
+                            .setMessage("Do you really want to set the QR code image to default?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    removeValue(activity, "SOUNDURI");
+                                    removeValue(activity, "SOUNDINTERNALURL");
+                                    save("SOUNDTITLE", "default_ringtone");
+                                    Toast.makeText(getActivity(), "sound was set to default setting", Toast.LENGTH_SHORT).show();
+
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                    return true;
+                }
+            });
+
+            Preference sound_load = (Preference) findPreference("SOUNDURI");
+
+            sound_load.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(getContext())) {
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE}, 2909);
+                        //go on when permission was given -> onRequestPermissionsResult
+                    } else {
+                        if (Build.VERSION.SDK_INT <19){
+                            Intent intent = new Intent();
+                            intent.setType("audio/*");
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(intent, "Select Audio MP3"),PICK_SOUND_REQUEST);
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.setType("audio/*");
+                            startActivityForResult(intent, PICK_SOUND_REQUEST_KITKAT);
+                        }
+                    }
+                    return true;
+                }
+            });
+
+        }
+
+        private String getSoundUrl(CharSequence charSequence) {
+            ContextWrapper cw = new ContextWrapper(activity);
+            String temp_directory = String.valueOf(cw.getDir("soundDir", Context.MODE_PRIVATE));
+            return String.valueOf(temp_directory+"/"+charSequence);
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+            switch (requestCode) {
+                case 2909: {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT <19){
+                            Intent intent = new Intent();
+                            intent.setType("audio/*");
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(intent, "Select Audio MP3"),PICK_SOUND_REQUEST);
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.setType("audio/*");
+                            startActivityForResult(intent, PICK_SOUND_REQUEST_KITKAT);
+                        }
+                        Log.d(TAG, "Write Storage Granted. Storage writable="+ grantResults[0]);
+
+                    } else {
+
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+                    }
+                    return;
+                }
+
+                // other 'switch' lines to check for other
+                // permissions this app might request
+            }
+        }
+
+        @SuppressLint("NewApi")
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (resultCode != Activity.RESULT_OK) return;
+            if (null == data) return;
+            Uri originalUri = null;
+
+            if (requestCode == PICK_SOUND_REQUEST) {
+                originalUri = data.getData();
+            } else if (requestCode == PICK_SOUND_REQUEST_KITKAT) {
+                originalUri = data.getData();
+                final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION) ;
+                // Check for the freshest data.
+                //noinspection ResourceType
+                getActivity().getContentResolver().takePersistableUriPermission(originalUri, takeFlags);
+
+            }
+            save("SOUNDURI", originalUri);
+            Log.d(TAG, "originalURI was saved: " + originalUri);
+        }
     }
 
     public static class LogPreferenceFragment extends PreferenceFragment {
@@ -1522,7 +1709,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 deleteDir(dir);
                 File imgdir = new File("/data/data/de.teamescape.dev.teamescapefbcounter/app_imageDir");
                 deleteDir(imgdir);
-            } catch (Exception e) {}
+                File sndDir = new File("/data/data/de.teamescape.dev.teamescapefbcounter/app_soundDir");
+                deleteDir(sndDir);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public static boolean deleteDir(File dir) {
