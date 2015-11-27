@@ -3,6 +3,9 @@ package de.teamescape.dev.teamescapefbcounter.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -18,6 +21,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import de.teamescape.dev.teamescapefbcounter.R;
 
 /**
  * Created by Marco on 13.11.2015.
@@ -111,13 +116,14 @@ public class AsyncCounterHandler extends AsyncTask<String, String, String> {
                 //int shareCount = Integer.parseInt(xPath.evaluate("//share_count/text()", doc));
                 //int clickCount = Integer.parseInt(xPath.evaluate("//click_count/text()", doc));
 
-                //play sound when counter increases increases only
-                if(Integer.valueOf(getValue(context, "LASTKNOWNFACEBOOKCOUNT"))<=likeCount){
+                //play sound when counter increases only
+                if(Integer.valueOf(getValue(context, "LASTKNOWNFACEBOOKCOUNT"))<likeCount){
                     save("FACEBOOKCOUNTINCREASED",true);
                 }else{
                     save("FACEBOOKCOUNTINCREASED",false);
                 }
                 save("LASTKNOWNFACEBOOKCOUNT", likeCount);
+
                 publishProgress(String.valueOf(likeCount));
                 Log.d(TAG, "FB FQL request fired with the result:" + likeCount);
             } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
@@ -129,7 +135,31 @@ public class AsyncCounterHandler extends AsyncTask<String, String, String> {
 
 
         return null;
+    }
+
+    private void playSound() {
+        MediaPlayer mMediaPlayer;
+
+        try{
+            String strSoundUrl = getValue(context,"SOUNDINTERNALURL");
+            Uri soundUri = Uri.parse(strSoundUrl);
+            mMediaPlayer = MediaPlayer.create(context,soundUri);
+            Log.d(TAG, "Sound: custom ringtone");
+        }catch(Exception e){
+            Log.d(TAG, "Sound: default ringtone");
+            mMediaPlayer = MediaPlayer.create(context, R.raw.default_ringtone);
         }
+
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        final MediaPlayer finalMMediaPlayer = mMediaPlayer;
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer arg0) {
+                finalMMediaPlayer.start();
+
+            }
+        });
+    }
 
     private String formatcountnonanimated(String formatedcount) {
         //return blank count with . at pos

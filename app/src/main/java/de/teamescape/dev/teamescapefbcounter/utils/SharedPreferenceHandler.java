@@ -7,29 +7,51 @@ package de.teamescape.dev.teamescapefbcounter.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.UserHandle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,7 +63,7 @@ import java.io.OutputStream;
 import de.teamescape.dev.teamescapefbcounter.R;
 import de.teamescape.dev.teamescapefbcounter.SettingsActivity;
 
-public class SharedPreferenceHandler {
+public class SharedPreferenceHandler extends Context {
 
     public SharedPreferences mPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener splistener;
@@ -244,6 +266,9 @@ public class SharedPreferenceHandler {
                         Log.d(TAG, "Facebook fql call was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FACEBOOKCOUNTINCREASED":
+                        if(Boolean.valueOf(mPrefs.getString("FACEBOOKCOUNTINCREASED",null))==true && !Boolean.valueOf(mPrefs.getString("SOUNDMUTE",null))){
+                            playSound();
+                        }
                         Log.d(TAG, "Facebook count increased was changed: "+mPrefs.getString(key,null));
                         break;
                     case "COUNTERANIMATION":
@@ -259,9 +284,9 @@ public class SharedPreferenceHandler {
                         Log.d(TAG, "Counter text top margin was changed: "+mPrefs.getString(key,null));
                         break;
                     case "LASTKNOWNFACEBOOKCOUNT":
-                        if(Boolean.valueOf(mPrefs.getString("FACEBOOKCOUNTINCREASED",null)) && !Boolean.valueOf(mPrefs.getString("SOUNDMUTE",null))){
-                            playSound();
-                        }
+//                        if(Boolean.valueOf(mPrefs.getString("FACEBOOKCOUNTINCREASED",null)) && !Boolean.valueOf(mPrefs.getString("SOUNDMUTE",null))){
+//                            playSound();
+//                        }
                         Log.d(TAG, "FB counter updated to: " + mPrefs.getString(key,null));
                         break;
                     case "COUNTERUPDATEINTEVAL":
@@ -330,6 +355,9 @@ public class SharedPreferenceHandler {
                         break;
                     case "SOUNDMUTE":
                         Log.d(TAG, "sound mute value was changed: "+mPrefs.getString(key,null));
+                        break;
+                    case "SOUNDINTERNALURL":
+                        Log.d(TAG, "sound internal url was changed: "+mPrefs.getString(key,null));
                         break;
                     case "FIRSTRUN":
                         Log.d(TAG, "first run value was changed: "+mPrefs.getString(key,null));
@@ -519,7 +547,7 @@ public class SharedPreferenceHandler {
                 save(hostactivity, URITag, file.getAbsolutePath());
                 save(hostactivity,TitleTag, soundTitle);
             }else {*/
-                if (MimeType == "audio/mpeg") {
+                //if (MimeType == "audio/mpeg") {
                     try {
                         copyFile(in, out);
                     } catch (Exception e) {
@@ -529,7 +557,7 @@ public class SharedPreferenceHandler {
                     //only change URL and Title if the input was successful
                     save(hostactivity, URLTag, file.getAbsolutePath());
                     save(hostactivity, TitleTag, soundTitle);
-                }
+                //}
             //}
 
             in.close();
@@ -543,11 +571,113 @@ public class SharedPreferenceHandler {
         }
     }
 
+    private void saveAudioToInternalStorage(Uri sounduri) {
+        InputStream in = null;
+        OutputStream out = null;
+        String soundTitle = null;
+        String MimeType = null;
+        String filePath = null;
+        String _id = null;
+        String document_id = null;
+        String[] projection = { android.provider.MediaStore.Files.FileColumns.DATA};
+        try {
+            /*if (isGoogleDriveUri(sounduri)) {
+                //is denied by intent call && save stream does not work
+                Cursor cursor = hostactivity.getContentResolver().query(sounduri,null,null,null,null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    soundTitle = cursor.getString(cursor.getColumnIndexOrThrow("_display_name"));
+                    MimeType = cursor.getString(cursor.getColumnIndexOrThrow("mime_type"));
+                }
+                in = hostactivity.getContentResolver().openInputStream(sounduri);
+            } else {*/
+                //File storage
+                String mPath = getPath(hostactivity, Uri.parse(sounduri.toString()));
+                //String[] filename = {mPath.substring((mPath != null ? mPath.lastIndexOf("/") : 0) + 1)};
+                File file = new File(mPath);
+                in = new FileInputStream(file);
+                soundTitle = file.getName();
+                MimeType = getMimeType(file.getAbsolutePath() + "/" + soundTitle);
+            //}
+
+            ContextWrapper cw = new ContextWrapper(hostactivity);
+            String temp_directory = String.valueOf(cw.getDir("soundDir", Context.MODE_PRIVATE));
+            File directory = new File(temp_directory);
+
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
+            File mypathFile = new File(directory, soundTitle);
+
+            String URLTag = "SOUNDINTERNALURL";
+            String TitleTag = "SOUNDTITLE";
+            String url = mypathFile.getAbsolutePath();
+
+                //TODO check if file exists !attention file is created before
+                /*if(mypathFile.exists()){
+                    Toast.makeText(hostactivity, "File already exists in storage", Toast.LENGTH_SHORT).show();
+                    save(hostactivity, URITag, file.getAbsolutePath());
+                    save(hostactivity,TitleTag, soundTitle);
+                }else {*/
+            if (MimeType == "audio/mpeg") {
+                try {
+                    copyInputStreamToFile(in,mypathFile);
+                    //copyFile(in, out);
+                    Log.d(TAG,"copied sound to internal storgae");
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+            }
+            save(hostactivity, URLTag, mypathFile.getAbsolutePath());
+            save(hostactivity, TitleTag, soundTitle);
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public byte[] readBytes(InputStream inputStream) throws IOException {
+        // this dynamically extends to take the bytes you read
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+
+        // this is storage overwritten on each iteration with bytes
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        // we need to know how may bytes were read to write them to the byteBuffer
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+
+        // and then we can return your byte array.
+        return byteBuffer.toByteArray();
+    }
+
+    private void copyInputStreamToFile( InputStream in, File file ) {
+        try {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
+        byte[] bytes = new byte[1024];
+        for (int count=0,prog=0;count!=-1;) {
+            count = in.read(bytes);
+            if(count != -1) {
+                out.write(bytes, 0, count);
+                prog=prog+count;
+            }
         }
     }
 
@@ -805,12 +935,13 @@ public class SharedPreferenceHandler {
             @Override
             protected File doInBackground(Uri... uris) {
                 saveAudioToInternalStorage(mPath);
+                //saveAudioToInternalStorage(uris[0]);
                 return null;
             }
 
             @Override
             protected void onPostExecute(File audio){
-                    Log.d(TAG, filename[0] + " was stored to: ");
+                    Log.d(TAG,"Sound was stored to: ");
                     progressDialog.dismiss();
             }
         };
@@ -991,5 +1122,470 @@ public class SharedPreferenceHandler {
     */
     public static boolean isGoogleDriveUri(Uri uri) {
         return "com.google.android.apps.docs.storage".equals(uri.getAuthority());
+    }
+
+    @Override
+    public AssetManager getAssets() {
+        return null;
+    }
+
+    @Override
+    public Resources getResources() {
+        return null;
+    }
+
+    @Override
+    public PackageManager getPackageManager() {
+        return null;
+    }
+
+    @Override
+    public ContentResolver getContentResolver() {
+        return null;
+    }
+
+    @Override
+    public Looper getMainLooper() {
+        return null;
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        return null;
+    }
+
+    @Override
+    public void setTheme(int resid) {
+
+    }
+
+    @Override
+    public Resources.Theme getTheme() {
+        return null;
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return null;
+    }
+
+    @Override
+    public String getPackageName() {
+        return null;
+    }
+
+    @Override
+    public ApplicationInfo getApplicationInfo() {
+        return null;
+    }
+
+    @Override
+    public String getPackageResourcePath() {
+        return null;
+    }
+
+    @Override
+    public String getPackageCodePath() {
+        return null;
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences(String s, int i) {
+        return null;
+    }
+
+    @Override
+    public FileInputStream openFileInput(String s) throws FileNotFoundException {
+        return null;
+    }
+
+    @Override
+    public FileOutputStream openFileOutput(String s, int i) throws FileNotFoundException {
+        return null;
+    }
+
+    @Override
+    public boolean deleteFile(String s) {
+        return false;
+    }
+
+    @Override
+    public File getFileStreamPath(String s) {
+        return null;
+    }
+
+    @Override
+    public File getFilesDir() {
+        return null;
+    }
+
+    @Override
+    public File getNoBackupFilesDir() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public File getExternalFilesDir(String s) {
+        return null;
+    }
+
+    @Override
+    public File[] getExternalFilesDirs(String s) {
+        return new File[0];
+    }
+
+    @Override
+    public File getObbDir() {
+        return null;
+    }
+
+    @Override
+    public File[] getObbDirs() {
+        return new File[0];
+    }
+
+    @Override
+    public File getCacheDir() {
+        return null;
+    }
+
+    @Override
+    public File getCodeCacheDir() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public File getExternalCacheDir() {
+        return null;
+    }
+
+    @Override
+    public File[] getExternalCacheDirs() {
+        return new File[0];
+    }
+
+    @Override
+    public File[] getExternalMediaDirs() {
+        return new File[0];
+    }
+
+    @Override
+    public String[] fileList() {
+        return new String[0];
+    }
+
+    @Override
+    public File getDir(String s, int i) {
+        return null;
+    }
+
+    @Override
+    public SQLiteDatabase openOrCreateDatabase(String s, int i, SQLiteDatabase.CursorFactory cursorFactory) {
+        return null;
+    }
+
+    @Override
+    public SQLiteDatabase openOrCreateDatabase(String s, int i, SQLiteDatabase.CursorFactory cursorFactory, DatabaseErrorHandler databaseErrorHandler) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteDatabase(String s) {
+        return false;
+    }
+
+    @Override
+    public File getDatabasePath(String s) {
+        return null;
+    }
+
+    @Override
+    public String[] databaseList() {
+        return new String[0];
+    }
+
+    @Override
+    public Drawable getWallpaper() {
+        return null;
+    }
+
+    @Override
+    public Drawable peekWallpaper() {
+        return null;
+    }
+
+    @Override
+    public int getWallpaperDesiredMinimumWidth() {
+        return 0;
+    }
+
+    @Override
+    public int getWallpaperDesiredMinimumHeight() {
+        return 0;
+    }
+
+    @Override
+    public void setWallpaper(Bitmap bitmap) throws IOException {
+
+    }
+
+    @Override
+    public void setWallpaper(InputStream inputStream) throws IOException {
+
+    }
+
+    @Override
+    public void clearWallpaper() throws IOException {
+
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+
+    }
+
+    @Override
+    public void startActivity(Intent intent, Bundle bundle) {
+
+    }
+
+    @Override
+    public void startActivities(Intent[] intents) {
+
+    }
+
+    @Override
+    public void startActivities(Intent[] intents, Bundle bundle) {
+
+    }
+
+    @Override
+    public void startIntentSender(IntentSender intentSender, Intent intent, int i, int i1, int i2) throws IntentSender.SendIntentException {
+
+    }
+
+    @Override
+    public void startIntentSender(IntentSender intentSender, Intent intent, int i, int i1, int i2, Bundle bundle) throws IntentSender.SendIntentException {
+
+    }
+
+    @Override
+    public void sendBroadcast(Intent intent) {
+
+    }
+
+    @Override
+    public void sendBroadcast(Intent intent, String s) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcast(Intent intent, String s) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcast(Intent intent, String s, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s1, Bundle bundle) {
+
+    }
+
+    @Override
+    public void sendBroadcastAsUser(Intent intent, UserHandle userHandle) {
+
+    }
+
+    @Override
+    public void sendBroadcastAsUser(Intent intent, UserHandle userHandle, String s) {
+
+    }
+
+    @Override
+    public void sendOrderedBroadcastAsUser(Intent intent, UserHandle userHandle, String s, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s1, Bundle bundle) {
+
+    }
+
+    @Override
+    public void sendStickyBroadcast(Intent intent) {
+
+    }
+
+    @Override
+    public void sendStickyOrderedBroadcast(Intent intent, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s, Bundle bundle) {
+
+    }
+
+    @Override
+    public void removeStickyBroadcast(Intent intent) {
+
+    }
+
+    @Override
+    public void sendStickyBroadcastAsUser(Intent intent, UserHandle userHandle) {
+
+    }
+
+    @Override
+    public void sendStickyOrderedBroadcastAsUser(Intent intent, UserHandle userHandle, BroadcastReceiver broadcastReceiver, Handler handler, int i, String s, Bundle bundle) {
+
+    }
+
+    @Override
+    public void removeStickyBroadcastAsUser(Intent intent, UserHandle userHandle) {
+
+    }
+
+    @Nullable
+    @Override
+    public Intent registerReceiver(BroadcastReceiver broadcastReceiver, IntentFilter intentFilter) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Intent registerReceiver(BroadcastReceiver broadcastReceiver, IntentFilter intentFilter, String s, Handler handler) {
+        return null;
+    }
+
+    @Override
+    public void unregisterReceiver(BroadcastReceiver broadcastReceiver) {
+
+    }
+
+    @Nullable
+    @Override
+    public ComponentName startService(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public boolean stopService(Intent intent) {
+        return false;
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
+        return false;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection) {
+
+    }
+
+    @Override
+    public boolean startInstrumentation(ComponentName componentName, String s, Bundle bundle) {
+        return false;
+    }
+
+    @Override
+    public Object getSystemService(String s) {
+        return null;
+    }
+
+    @Override
+    public String getSystemServiceName(Class<?> aClass) {
+        return null;
+    }
+
+    @Override
+    public int checkPermission(String s, int i, int i1) {
+        return 0;
+    }
+
+    @Override
+    public int checkCallingPermission(String s) {
+        return 0;
+    }
+
+    @Override
+    public int checkCallingOrSelfPermission(String s) {
+        return 0;
+    }
+
+    @Override
+    public int checkSelfPermission(String s) {
+        return 0;
+    }
+
+    @Override
+    public void enforcePermission(String s, int i, int i1, String s1) {
+
+    }
+
+    @Override
+    public void enforceCallingPermission(String s, String s1) {
+
+    }
+
+    @Override
+    public void enforceCallingOrSelfPermission(String s, String s1) {
+
+    }
+
+    @Override
+    public void grantUriPermission(String s, Uri uri, int i) {
+
+    }
+
+    @Override
+    public void revokeUriPermission(Uri uri, int i) {
+
+    }
+
+    @Override
+    public int checkUriPermission(Uri uri, int i, int i1, int i2) {
+        return 0;
+    }
+
+    @Override
+    public int checkCallingUriPermission(Uri uri, int i) {
+        return 0;
+    }
+
+    @Override
+    public int checkCallingOrSelfUriPermission(Uri uri, int i) {
+        return 0;
+    }
+
+    @Override
+    public int checkUriPermission(Uri uri, String s, String s1, int i, int i1, int i2) {
+        return 0;
+    }
+
+    @Override
+    public void enforceUriPermission(Uri uri, int i, int i1, int i2, String s) {
+
+    }
+
+    @Override
+    public void enforceCallingUriPermission(Uri uri, int i, String s) {
+
+    }
+
+    @Override
+    public void enforceCallingOrSelfUriPermission(Uri uri, int i, String s) {
+
+    }
+
+    @Override
+    public void enforceUriPermission(Uri uri, String s, String s1, int i, int i1, int i2, String s2) {
+
+    }
+
+    @Override
+    public Context createPackageContext(String s, int i) throws PackageManager.NameNotFoundException {
+        return null;
+    }
+
+    @Override
+    public Context createConfigurationContext(Configuration configuration) {
+        return null;
+    }
+
+    @Override
+    public Context createDisplayContext(Display display) {
+        return null;
     }
 }

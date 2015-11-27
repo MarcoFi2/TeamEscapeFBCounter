@@ -1562,10 +1562,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             Intent intent = new Intent();
                             intent.setType("audio/*");
                             intent.setAction(Intent.ACTION_GET_CONTENT);
+                            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                             startActivityForResult(Intent.createChooser(intent, "Select Audio MP3"),PICK_SOUND_REQUEST);
                         } else {
                             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                             intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                             intent.setType("audio/*");
                             startActivityForResult(intent, PICK_SOUND_REQUEST_KITKAT);
                         }
@@ -1591,10 +1593,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             Intent intent = new Intent();
                             intent.setType("audio/*");
                             intent.setAction(Intent.ACTION_GET_CONTENT);
+                            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                             startActivityForResult(Intent.createChooser(intent, "Select Audio MP3"),PICK_SOUND_REQUEST);
                         } else {
                             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                             intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                             intent.setType("audio/*");
                             startActivityForResult(intent, PICK_SOUND_REQUEST_KITKAT);
                         }
