@@ -911,6 +911,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                     save("FACEBOOKIMAGESIZERATIO", "0.10");
                                     save("FACEBOOKIMAGELEFTMARGIN", "0.25");
                                     save("FACEBOOKIMAGETOPMARGIN", "0.45");
+                                    save("FIXEDALLOCATIONCOUNTERFB", "true");
                                     Toast.makeText(getActivity(), "facebook image was set to default setting", Toast.LENGTH_SHORT).show();
 
                                 }})
@@ -1062,6 +1063,29 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                 }
 
+            });
+
+            Preference counter_restore = (Preference) findPreference("restore_counter");
+
+            counter_restore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("QR code image reset")
+                            .setMessage("Do you really want to set the counter to default?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    save("COUNTERANIMATION", "true");
+                                    save("COUNTERTEXTSIZE", "60");
+                                    save("COUNTERTEXTLEFTMARGIN", "0.5");
+                                    save("COUNTERTEXTTOPMARGIN", "0.5");
+                                    Toast.makeText(getActivity(), "counter was set to default setting", Toast.LENGTH_SHORT).show();
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                    return true;
+                }
             });
         }
     }
@@ -1241,23 +1265,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     new AlertDialog.Builder(getActivity())
                             .setTitle("Text reset")
-                            .setMessage("Do you really want to set the background to default?")
+                            .setMessage("Do you really want to set the text areas to default?")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                                 public void onClick(DialogInterface dialog, int whichButton) {
 
                                     save("TEXTCONTENTCENTER", "Hat es euch gefallen? \n Dann einfach direkt auf Facebook liken!");
-                                    save("TEXTCONTENTCENTERLEFTMARGIN", "0.18");
+                                    save("TEXTCONTENTCENTERLEFTMARGIN", "0.5");
                                     save("TEXTCONTENTCENTERTOPMARGIN", "0.7");
                                     save("TEXTCONTENTCENTERFONTSIZE", "20");
                                     save("TEXTCONTENTBUTTOM", "www.facebook.com/TeamEscapeDE");
-                                    save("TEXTCONTENTBUTTOMLEFTMARGIN", "0.22");
+                                    save("TEXTCONTENTBUTTOMLEFTMARGIN", "0.5");
                                     save("TEXTCONTENTBUTTOMTOPMARGIN", "0.9");
                                     save("TEXTCONTENTBUTTOMFONTSIZE", "20");
                                     save("TEXTCONTENTBUTTOMHYPERLINK", "false");
                                     Toast.makeText(getActivity(), "text was set to default setting", Toast.LENGTH_SHORT).show();
-
                                 }
                             })
                             .setNegativeButton(android.R.string.no, null).show();
@@ -1531,7 +1554,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     new AlertDialog.Builder(getActivity())
                             .setTitle("QR code image reset")
-                            .setMessage("Do you really want to set the QR code image to default?")
+                            .setMessage("Do you really want to set the sound to default?")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
